@@ -19,7 +19,7 @@
             <v-text-field
               clearable
               label="Class name"
-              v-model="className"
+              v-model.trim="className"
               placeholder="Укр мова..."
               :error="!className && error"
               :error-messages="!className && error ? 'Please fill out this field' : null"/>
@@ -28,7 +28,7 @@
             <v-text-field
               clearable
               label="Task"
-              v-model="task"
+              v-model.trim="task"
               :error="!task && error"
               placeholder="№345..."
               :error-messages="!task && error ? 'Please fill out this field' : null"/>
@@ -36,7 +36,7 @@
           <v-list-item>
             <v-text-field
               type="date"
-              label="Class name"
+              label="Finish date"
               v-model="_finishDate"
               :error="!_finishDate && error"
               placeholder="Укр мова..."
@@ -50,11 +50,12 @@
 
 <script>
 import { DateTime } from 'luxon';
-import { openDB } from 'idb';
+import { v4 } from 'uuid';
 
 export default {
   name: 'TaskOverlay',
   props: {
+    db: IDBDatabase,
     show: {
       type: Boolean,
       required: true,
@@ -67,12 +68,7 @@ export default {
       className: '',
       task: '',
       finishDate: DateTime.local().plus({ days: 1 }).toISO(),
-      db: null,
     };
-  },
-  async mounted() {
-    const db = await openDB('journal');
-    this.db = db;
   },
   computed: {
     dialog: {
@@ -104,14 +100,17 @@ export default {
       }
       this.error = false;
       const data = {
+        id: v4(),
         className: this.className,
         task: this.task,
         finishDate: this.finishDate,
         createdDate: DateTime.local().toISO(),
       };
-      const store = this.db.transaction('homework', 'readwrite').objectStore('homework');
-      await store.put(data);
-      this.$emit('close');
+      await this.db.add('homework', data);
+      this.className = '';
+      this.task = '';
+      this.finishDate = DateTime.local().plus({ days: 1 }).toISO();
+      this.$emit('close', data);
     },
   },
 };
