@@ -1,16 +1,18 @@
 <template>
   <v-container>
     <v-fade-transition group>
-      <v-list v-for="(date, idx) in getDates" :key="idx">
-        <v-subheader class="headline" style="font-size: 2em!important;">{{date}}</v-subheader>
+      <v-list :dark="dark" v-for="(date, idx) in getDates" :key="idx">
+        <v-subheader class="headline" style="font-size: 2em!important;">
+          {{date}}
+        </v-subheader>
         <v-divider/>
         <v-fade-transition group>
         <v-list-item v-for="task in getSortedTasks[idx]" :key="task.createdDate" class="mt-2">
-            <v-card min-width="100%" min-height="100%" class="pa-2" elevation="1">
+            <v-card :dark="dark" min-width="100%" min-height="100%" class="pa-2" elevation="1">
               <v-list-item-title class="headline" style="font-size: 1.5em!important;">
                 {{task.className}}
               </v-list-item-title>
-              <v-list-item-subtitle>
+              <v-list-item-subtitle :class="dark ? 'white--text' : null">
                 {{formatDate(task.finishDate)}}
               </v-list-item-subtitle>
               <v-list-item-content style="font-size: 1.6rem;">
@@ -33,6 +35,11 @@ import { DateTime } from 'luxon';
 export default {
   name: 'Grid',
   props: {
+    dark: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     tasks: {
       type: Array,
       required: true,

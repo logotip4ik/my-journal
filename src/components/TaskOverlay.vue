@@ -1,11 +1,12 @@
 <template>
   <v-dialog
+    :dark="dark"
     fullscreen
     hide-overlay
     v-model="dialog"
     transition="dialog-bottom-transition">
-    <v-card>
-      <v-toolbar color="primary" dark>
+    <v-card :dark="dark">
+      <v-toolbar :color="dark ? 'grey darken-4' : 'primary'" dark>
         <v-btn icon @click="close"><v-icon>mdi-close</v-icon></v-btn>
         <v-toolbar-title>Task</v-toolbar-title>
         <v-spacer/>
@@ -18,6 +19,7 @@
           <v-list-item>
             <v-text-field
               clearable
+              autofocus
               label="Class name"
               v-model.trim="className"
               placeholder="Укр мова..."
@@ -56,6 +58,11 @@ export default {
   name: 'TaskOverlay',
   props: {
     db: IDBDatabase,
+    dark: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     show: {
       type: Boolean,
       required: true,
