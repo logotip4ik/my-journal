@@ -23,6 +23,7 @@
                   <v-img
                     contain
                     max-height="200"
+                    class="v-chip--clickable"
                     @click.native="showOverlayPhoto(getPhoto(task.photo))"
                     :src="getPhoto(task.photo)"/>
                 </v-list-item-content>
@@ -34,12 +35,11 @@
         </v-list-item>
         </v-fade-transition>
       </v-list>
-      <PhotoOverlay
-        :key="Math.random()"
-        :value="value"
-        :photo="overlayPhoto"
-        @close="value = !value"/>
     </v-fade-transition>
+    <PhotoOverlay
+      :value="value"
+      :photo="overlayPhoto"
+      @close="value = !value"/>
   </v-container>
 </template>
 

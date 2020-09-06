@@ -1,5 +1,5 @@
 <template>
-  <v-dialog :value="show">
+  <v-dialog v-model="show">
       <v-img
         :max-width="getMaxWidth"
         :max-height="getMaxHeight" :src="photo" />
