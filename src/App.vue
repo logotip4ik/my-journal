@@ -51,7 +51,6 @@ export default {
       showTaskOverlay: false,
       tasks: [],
       db: null,
-      test: true,
       darkMode: false,
     };
   },

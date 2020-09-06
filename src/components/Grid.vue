@@ -15,9 +15,18 @@
               <v-list-item-subtitle :class="dark ? 'white--text' : null">
                 {{formatDate(task.finishDate)}}
               </v-list-item-subtitle>
-              <v-list-item-content style="font-size: 1.6rem;">
-                {{task.task}}
-              </v-list-item-content>
+              <div class="d-flex">
+                <v-list-item-content style="font-size: 1.6rem;">
+                  {{task.task}}
+                </v-list-item-content>
+                <v-list-item-content v-if="task.photo">
+                  <v-img
+                    contain
+                    max-height="200"
+                    @click.native="showOverlayPhoto(getPhoto(task.photo))"
+                    :src="getPhoto(task.photo)"/>
+                </v-list-item-content>
+              </div>
               <v-btn icon absolute top right color="red" @click="delItem(task.id)">
                 <v-icon>mdi-delete-outline</v-icon>
               </v-btn>
@@ -25,12 +34,19 @@
         </v-list-item>
         </v-fade-transition>
       </v-list>
+      <PhotoOverlay
+        :key="Math.random()"
+        :value="value"
+        :photo="overlayPhoto"
+        @close="value = !value"/>
     </v-fade-transition>
   </v-container>
 </template>
 
 <script>
 import { DateTime } from 'luxon';
+
+import PhotoOverlay from './PhotoOverlay.vue';
 
 export default {
   name: 'Grid',
@@ -45,6 +61,15 @@ export default {
       required: true,
       default: Array.from(0),
     },
+  },
+  components: {
+    PhotoOverlay,
+  },
+  data() {
+    return {
+      value: false,
+      overlayPhoto: '',
+    };
   },
   computed: {
     getDates() {
@@ -73,6 +98,13 @@ export default {
     },
     delItem(id) {
       this.$emit('delete', id);
+    },
+    getPhoto(photo) {
+      return `data:image/*;base64,${btoa(photo)}`;
+    },
+    showOverlayPhoto(photo) {
+      this.overlayPhoto = photo;
+      this.value = true;
     },
   },
 };

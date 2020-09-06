@@ -18,6 +18,7 @@
         <v-list three-line subheader max-width="1200" class="mx-auto">
           <v-list-item>
             <v-text-field
+              required
               clearable
               autofocus
               label="Class name"
@@ -27,9 +28,13 @@
               :error-messages="!className && error ? 'Please fill out this field' : null"/>
           </v-list-item>
           <v-list-item>
-            <v-text-field
+            <v-textarea
+              required
+              rows="2"
               clearable
+              auto-grow
               label="Task"
+              row-height="16"
               v-model.trim="task"
               :error="!task && error"
               placeholder="№345..."
@@ -37,12 +42,19 @@
           </v-list-item>
           <v-list-item>
             <v-text-field
+              required
               type="date"
               label="Finish date"
               v-model="_finishDate"
-              :error="!_finishDate && error"
               placeholder="Укр мова..."
+              :error="!_finishDate && error"
               :error-messages="!_finishDate && error ? 'Please fill out this field' : null"/>
+          </v-list-item>
+          <v-list-item>
+            <v-file-input
+              v-model="photo"
+              show-size
+              accept="image/*" chips label="Photo"/>
           </v-list-item>
         </v-list>
       </v-form>
@@ -74,6 +86,7 @@ export default {
       error: false,
       className: '',
       task: '',
+      photo: null,
       finishDate: DateTime.local().plus({ days: 1 }).toISO(),
     };
   },
@@ -106,18 +119,39 @@ export default {
         return;
       }
       this.error = false;
-      const data = {
-        id: v4(),
-        className: this.className,
-        task: this.task,
-        finishDate: this.finishDate,
-        createdDate: DateTime.local().toISO(),
-      };
-      await this.db.add('homework', data);
-      this.className = '';
-      this.task = '';
-      this.finishDate = DateTime.local().plus({ days: 1 }).toISO();
-      this.$emit('close', data);
+      if (this.photo) {
+        const reader = new FileReader();
+        reader.readAsBinaryString(this.photo);
+        reader.onload = async (e) => {
+          const data = {
+            id: v4(),
+            task: this.task,
+            photo: e.target.result,
+            className: this.className,
+            finishDate: this.finishDate,
+            createdDate: DateTime.local().toISO(),
+          };
+          await this.db.add('homework', data);
+          this.className = '';
+          this.task = '';
+          this.photo = null;
+          this.finishDate = DateTime.local().plus({ days: 1 }).toISO();
+          this.$emit('close', data);
+        };
+      } else {
+        const data = {
+          id: v4(),
+          task: this.task,
+          className: this.className,
+          finishDate: this.finishDate,
+          createdDate: DateTime.local().toISO(),
+        };
+        await this.db.add('homework', data);
+        this.className = '';
+        this.task = '';
+        this.finishDate = DateTime.local().plus({ days: 1 }).toISO();
+        this.$emit('close', data);
+      }
     },
   },
 };
