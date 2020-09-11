@@ -46,7 +46,6 @@
               type="date"
               label="Finish date"
               v-model="_finishDate"
-              placeholder="Укр мова..."
               :error="!_finishDate && error"
               :error-messages="!_finishDate && error ? 'Please fill out this field' : null"/>
           </v-list-item>
@@ -83,10 +82,10 @@ export default {
   },
   data() {
     return {
-      error: false,
-      className: '',
       task: '',
       photo: null,
+      error: false,
+      className: '',
       finishDate: DateTime.local().plus({ days: 1 }).toISO(),
     };
   },

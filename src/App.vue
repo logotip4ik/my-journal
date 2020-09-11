@@ -1,31 +1,22 @@
 <template>
   <v-app :dark="darkMode" :class="darkMode ? 'dark-background' : null">
-    <v-app-bar
-      app
-      dark
-      :color="darkMode ? 'grey darken-4' : 'primary'">
-      <v-toolbar-title>
-        Journal
-      </v-toolbar-title>
-      <v-spacer />
-      <div>
-        <v-btn icon @click="showTaskOverlay = !showTaskOverlay">
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
-      </div>
-    </v-app-bar>
-
     <v-main :dark="darkMode">
+      <Navbar
+       :dark="darkMode"
+       @add-task="toggleViewTaskOverlay"/>
       <TaskOverlay
         :db="db"
         :dark="darkMode"
         @close="closeOverlay"
         :show="showTaskOverlay"/>
-      <Grid
+      <TaskGrid
         :db="db"
         :dark="darkMode"
         :tasks="tasks"
-        @delete="deleteItem"/>
+        @delete="deleteItem"
+        @update-task="updateTask"
+        @delete-item-photo="deleteItemPhoto"
+        @delete-items="deleteItems"/>
       <v-btn fab fixed bottom left @click="toggleMode" :dark="darkMode">
         <v-icon v-if="darkMode">mdi-white-balance-sunny</v-icon>
         <v-icon v-else>mdi-weather-night</v-icon>
@@ -37,13 +28,15 @@
 <script>
 import { openDB } from 'idb';
 
-import Grid from './components/Grid.vue';
+import Navbar from './components/Navbar.vue';
+import TaskGrid from './components/TaskGrid.vue';
 import TaskOverlay from './components/TaskOverlay.vue';
 
 export default {
   name: 'App',
   components: {
-    Grid,
+    Navbar,
+    TaskGrid,
     TaskOverlay,
   },
   data() {
@@ -60,9 +53,11 @@ export default {
     }
     const db = await openDB('journal-store', 1, {
       upgrade(dataBase) {
-        dataBase.createObjectStore('homework', {
-          keyPath: 'id',
-        });
+        if (!this.db.objectStoreNames.contains('homework')) {
+          dataBase.createObjectStore('homework', {
+            keyPath: 'id',
+          });
+        }
       },
     });
     const tasks = await db.getAll('homework');
@@ -87,9 +82,31 @@ export default {
       this.db.delete('homework', id);
       this.tasks = this.tasks.filter((task) => task.id !== id);
     },
+    deleteItems(items) {
+      items.forEach(({ id }) => this.deleteItem(id));
+    },
+    async deleteItemPhoto(id) {
+      const newItem = await this.db.get('homework', id);
+      newItem.photo = null;
+      this.tasks = this.tasks.map((item) => (
+        item.id === newItem.id ? newItem : item
+      ));
+      this.db.delete('homework', id);
+      this.db.add('homework', newItem);
+    },
+    updateTask(task) {
+      this.tasks = this.tasks.map((item) => (
+        item.id === task.id ? task : item
+      ));
+      this.db.delete('homework', task.id);
+      this.db.add('homework', task);
+    },
     toggleMode() {
       this.darkMode = !this.darkMode;
       localStorage.darkMode = JSON.stringify(this.darkMode);
+    },
+    toggleViewTaskOverlay() {
+      this.showTaskOverlay = !this.showTaskOverlay;
     },
   },
 };

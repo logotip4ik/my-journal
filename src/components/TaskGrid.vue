@@ -1,15 +1,33 @@
 <template>
   <v-container>
-    <v-fade-transition group>
+    <v-slide-y-transition group>
       <v-list :dark="dark" v-for="(date, idx) in getDates" :key="idx">
         <v-subheader class="headline" style="font-size: 2em!important;">
-          {{date}}
+          {{new Date(date).toLocaleDateString()}}
+          <v-spacer/>
+          <v-btn
+            icon
+            color="red"
+            @click="delItems(getSortedTasks[idx])">
+            <v-icon>mdi-minus</v-icon>
+          </v-btn>
         </v-subheader>
+        <v-spacer/>
         <v-divider/>
-        <v-fade-transition group>
-        <v-list-item v-for="task in getSortedTasks[idx]" :key="task.createdDate" class="mt-2">
-            <v-card :dark="dark" min-width="100%" min-height="100%" class="pa-2" elevation="1">
-              <v-list-item-title class="headline" style="font-size: 1.5em!important;">
+        <v-slide-y-transition group>
+          <v-list-item
+            v-for="task in getSortedTasks[idx]"
+            :key="task.id" class="mt-2">
+            <v-card
+              :dark="dark"
+              min-width="100%"
+              min-height="100%"
+              class="pa-2"
+              elevation="1">
+              <v-list-item-title
+                class="headline"
+                :style="{fontSize: '1.5em!important', cursor: 'help'}"
+                @click="showEditTaskOverlay(task)">
                 {{task.className}}
               </v-list-item-title>
               <v-list-item-subtitle :class="dark ? 'white--text' : null">
@@ -23,7 +41,7 @@
                   <v-img
                     contain
                     max-height="200"
-                    class="v-chip--clickable"
+                    :style="{cursor: 'zoom-in'}"
                     @click.native="showOverlayPhoto(getPhoto(task.photo))"
                     :src="getPhoto(task.photo)"/>
                 </v-list-item-content>
@@ -32,14 +50,22 @@
                 <v-icon>mdi-delete-outline</v-icon>
               </v-btn>
             </v-card>
-        </v-list-item>
-        </v-fade-transition>
+          </v-list-item>
+        </v-slide-y-transition>
       </v-list>
-    </v-fade-transition>
+    </v-slide-y-transition>
     <PhotoOverlay
       :value="value"
       :photo="overlayPhoto"
       @close="value = !value"/>
+    <TaskEditOverlay
+      :db="db"
+      :dark="dark"
+      :value="currentlyEditing"
+      :task="currentlyEditTask"
+      @update-task="emitUpdateTask"
+      @delete-item-photo="emitDeleteItemPhoto"
+      @close="currentlyEditing = false"/>
   </v-container>
 </template>
 
@@ -47,9 +73,10 @@
 import { DateTime } from 'luxon';
 
 import PhotoOverlay from './PhotoOverlay.vue';
+import TaskEditOverlay from './TaskEditOverlay.vue';
 
 export default {
-  name: 'Grid',
+  name: 'TaskGrid',
   props: {
     dark: {
       type: Boolean,
@@ -61,14 +88,18 @@ export default {
       required: true,
       default: Array.from(0),
     },
+    db: IDBDatabase,
   },
   components: {
     PhotoOverlay,
+    TaskEditOverlay,
   },
   data() {
     return {
       value: false,
       overlayPhoto: '',
+      currentlyEditing: false,
+      currentlyEditTask: {},
     };
   },
   computed: {
@@ -76,7 +107,7 @@ export default {
       const dates = new Set(this.tasks.map((task) => task.finishDate.substring(0, 10)));
       return Array.from(dates);
     },
-    // returns tasks for speciefic date
+    // returns tasks for specific date
     getSortedTasks() {
       const dates = this.getDates;
       const data = {};
@@ -99,12 +130,25 @@ export default {
     delItem(id) {
       this.$emit('delete', id);
     },
+    delItems(items) {
+      this.$emit('delete-items', items);
+    },
     getPhoto(photo) {
       return `data:image/*;base64,${btoa(photo)}`;
     },
     showOverlayPhoto(photo) {
       this.overlayPhoto = photo;
       this.value = true;
+    },
+    showEditTaskOverlay(editTask) {
+      this.currentlyEditTask = editTask;
+      this.currentlyEditing = true;
+    },
+    emitDeleteItemPhoto(id) {
+      this.$emit('delete-item-photo', id);
+    },
+    emitUpdateTask(item) {
+      this.$emit('update-task', item);
     },
   },
 };
