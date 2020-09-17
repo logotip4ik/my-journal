@@ -45,9 +45,9 @@
               required
               type="date"
               label="Finish date"
-              v-model="_finishDate"
-              :error="!_finishDate && error"
-              :error-messages="!_finishDate && error ? 'Please fill out this field' : null"/>
+              v-model="finishDate"
+              :error="!finishDate && error"
+              :error-messages="!finishDate && error ? 'Please fill out this field' : null"/>
           </v-list-item>
           <v-list-item>
             <v-file-input
@@ -86,7 +86,7 @@ export default {
       photo: null,
       error: false,
       className: '',
-      finishDate: DateTime.local().plus({ days: 1 }).toISO(),
+      finishDate: DateTime.local().plus({ days: 1 }).toISODate(),
     };
   },
   computed: {
@@ -96,15 +96,6 @@ export default {
       },
       set() {
         this.$emit('close');
-      },
-    },
-    // eslint-disable-next-line
-    _finishDate: {
-      get() {
-        return this.finishDate.substring(0, 10);
-      },
-      set(val) {
-        this.finishDate = val;
       },
     },
   },
