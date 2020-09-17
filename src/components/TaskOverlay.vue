@@ -125,7 +125,7 @@ export default {
           this.className = '';
           this.task = '';
           this.photo = null;
-          this.finishDate = DateTime.local().plus({ days: 1 }).toISO();
+          this.finishDate = DateTime.local().plus({ days: 1 }).toISODate();
           this.$emit('close', data);
         };
       } else {
@@ -139,7 +139,7 @@ export default {
         await this.db.add('homework', data);
         this.className = '';
         this.task = '';
-        this.finishDate = DateTime.local().plus({ days: 1 }).toISO();
+        this.finishDate = DateTime.local().plus({ days: 1 }).toISODate();
         this.$emit('close', data);
       }
     },
