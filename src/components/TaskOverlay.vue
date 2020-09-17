@@ -127,7 +127,7 @@ export default {
             task: this.task,
             photo: e.target.result,
             className: this.className,
-            finishDate: this.finishDate,
+            finishDate: DateTime.fromISO(this.finishDate).toISO(),
             createdDate: DateTime.local().toISO(),
           };
           await this.db.add('homework', data);
@@ -142,7 +142,7 @@ export default {
           id: v4(),
           task: this.task,
           className: this.className,
-          finishDate: this.finishDate,
+          finishDate: DateTime.fromISO(this.finishDate).toISO(),
           createdDate: DateTime.local().toISO(),
         };
         await this.db.add('homework', data);

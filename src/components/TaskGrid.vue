@@ -105,7 +105,7 @@ export default {
   computed: {
     getDates() {
       const dates = new Set(this.tasks.map((task) => task.finishDate.substring(0, 10)));
-      return Array.from(dates);
+      return Array.from(dates).sort((a, b) => new Date(a) - new Date(b));
     },
     // returns tasks for specific date
     getSortedTasks() {
