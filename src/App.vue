@@ -53,7 +53,7 @@ export default {
     }
     const db = await openDB('journal-store', 1, {
       upgrade(dataBase) {
-        if (!this.db.objectStoreNames.contains('homework')) {
+        if (!dataBase.objectStoreNames.contains('homework')) {
           dataBase.createObjectStore('homework', {
             keyPath: 'id',
           });
@@ -94,16 +94,16 @@ export default {
       this.db.delete('homework', id);
       this.db.add('homework', newItem);
     },
-    updateTask(task) {
+    async updateTask(task) {
       this.tasks = this.tasks.map((item) => (
         item.id === task.id ? task : item
       ));
-      this.db.delete('homework', task.id);
-      this.db.add('homework', task);
+      await this.db.delete('homework', task.id);
+      await this.db.add('homework', task);
     },
     toggleMode() {
       this.darkMode = !this.darkMode;
-      localStorage.darkMode = JSON.stringify(this.darkMode);
+      localStorage.darkMode = this.darkMode;
     },
     toggleViewTaskOverlay() {
       this.showTaskOverlay = !this.showTaskOverlay;

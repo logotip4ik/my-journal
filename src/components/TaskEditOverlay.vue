@@ -2,7 +2,7 @@
   <v-dialog v-model="show" max-width="650px" :dark="dark">
     <v-card max-width="650px" :dark="dark">
       <v-container>
-        <v-form>
+        <v-form @submit.prevent="handleSave">
           <v-text-field
             required
             clearable
@@ -28,11 +28,15 @@
         <v-btn
           v-if="Photo"
           @click="deletePhoto"
-          color="primary" outlined>Delete Photo</v-btn>
+          color="primary" outlined>
+          <v-icon>mdi-delete-outline</v-icon>
+          Photo</v-btn>
         <v-btn
           v-if="Photo"
           @click="downloadPhoto"
-          color="primary">Download Photo</v-btn>
+          color="primary">
+          <v-icon>mdi-download</v-icon>
+          Photo</v-btn>
         <v-spacer/>
         <v-btn @click="handleSave" color="primary">Save</v-btn>
       </v-card-actions>
@@ -83,8 +87,13 @@ export default {
     },
   },
   computed: {
-    finishDateFormatted() {
-      return this.FinishDate?.substring(0, 10);
+    finishDateFormatted: {
+      get() {
+        return this.FinishDate?.substring(0, 10);
+      },
+      set(val) {
+        this.FinishDate = val;
+      },
     },
     show: {
       get() {

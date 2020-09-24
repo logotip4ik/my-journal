@@ -14,7 +14,7 @@
           <v-btn @click="addTask" icon>save</v-btn>
         </v-toolbar-items>
       </v-toolbar>
-      <v-form @submit.prevent="addTask">
+      <v-form @submit.prevent>
         <v-list three-line subheader max-width="1200" class="mx-auto">
           <v-list-item>
             <v-text-field
@@ -24,6 +24,7 @@
               label="Class name"
               v-model.trim="className"
               placeholder="Укр мова..."
+              @keypress.enter="$refs.task.focus()"
               :error="!className && error"
               :error-messages="!className && error ? 'Please fill out this field' : null"/>
           </v-list-item>
@@ -31,13 +32,15 @@
             <v-textarea
               required
               rows="2"
+              ref="task"
               clearable
               auto-grow
               label="Task"
               row-height="16"
               v-model.trim="task"
-              :error="!task && error"
               placeholder="№345..."
+              @keypress.ctrl.enter="addTask"
+              :error="!task && error"
               :error-messages="!task && error ? 'Please fill out this field' : null"/>
           </v-list-item>
           <v-list-item>
