@@ -3,61 +3,59 @@
     <v-slide-y-transition group>
       <v-list :dark="dark" v-for="(date, idx) in getDates" :key="idx">
         <v-subheader class="headline" style="font-size: 2em!important;">
-          {{new Date(date).toLocaleDateString()}}
-          <v-spacer/>
-          <v-btn
-            icon
-            color="red"
-            @click="delItems(getSortedTasks[idx])">
+          {{ new Date(date).toLocaleDateString() }}
+          <v-spacer />
+          <v-btn icon color="red" @click="delItems(getSortedTasks[idx])">
             <v-icon>mdi-minus</v-icon>
           </v-btn>
         </v-subheader>
-        <v-spacer/>
-        <v-divider/>
+        <v-spacer />
+        <v-divider />
         <v-slide-y-transition group>
-          <v-list-item
-            v-for="task in getSortedTasks[idx]"
-            :key="task.id" class="mt-2">
-            <v-card
-              :dark="dark"
-              min-width="100%"
-              min-height="100%"
-              class="pa-2"
-              elevation="1">
+          <v-list-item v-for="task in getSortedTasks[idx]" :key="task.id" class="mt-2">
+            <v-card :dark="dark" min-width="100%" min-height="100%" class="pa-2" elevation="1">
               <v-list-item-title
                 class="headline"
-                :style="{fontSize: '1.5em!important', cursor: 'help'}"
-                @click="showEditTaskOverlay(task)">
-                {{task.className}}
+                :style="{ fontSize: '1.5em!important', cursor: 'help' }"
+                @click="showEditTaskOverlay(task)"
+              >
+                {{ task.className }}
               </v-list-item-title>
               <v-list-item-subtitle :class="dark ? 'white--text' : null">
-                {{formatDate(task.finishDate)}}
+                {{ formatDate(task.finishDate) }}
               </v-list-item-subtitle>
               <div class="d-flex">
                 <v-list-item-content style="font-size: 1.6rem;">
-                  {{task.task}}
+                  {{ task.task }}
                 </v-list-item-content>
                 <v-list-item-content v-if="task.photo">
                   <v-img
                     contain
                     max-height="200"
-                    :style="{cursor: 'zoom-in'}"
+                    :style="{ cursor: 'zoom-in' }"
                     @click.native="showOverlayPhoto(getPhoto(task.photo))"
-                    :src="getPhoto(task.photo)"/>
+                    :src="getPhoto(task.photo)"
+                  />
                 </v-list-item-content>
               </div>
               <v-btn icon absolute top right color="red" @click="delItem(task.id)">
                 <v-icon>mdi-delete-outline</v-icon>
+              </v-btn>
+              <v-btn icon absolute bottom right color="blue" @click="shareItem(task)">
+                <v-icon>mdi-share</v-icon>
               </v-btn>
             </v-card>
           </v-list-item>
         </v-slide-y-transition>
       </v-list>
     </v-slide-y-transition>
-    <PhotoOverlay
-      :value="value"
-      :photo="overlayPhoto"
-      @close="value = !value"/>
+    <PhotoOverlay :value="value" :photo="overlayPhoto" @close="value = !value" />
+    <TaskShareOverlay
+      :dark="dark"
+      :show="currentlySharing"
+      :task="currentlySharingTask"
+      @close="currentlySharing = false"
+    />
     <TaskEditOverlay
       :db="db"
       :dark="dark"
@@ -65,7 +63,8 @@
       :task="currentlyEditTask"
       @update-task="emitUpdateTask"
       @delete-item-photo="emitDeleteItemPhoto"
-      @close="currentlyEditing = false"/>
+      @close="currentlyEditing = false"
+    />
   </v-container>
 </template>
 
@@ -74,6 +73,7 @@ import { DateTime } from 'luxon';
 
 import PhotoOverlay from './PhotoOverlay.vue';
 import TaskEditOverlay from './TaskEditOverlay.vue';
+import TaskShareOverlay from './TaskShareOverlay.vue';
 
 export default {
   name: 'TaskGrid',
@@ -93,6 +93,7 @@ export default {
   components: {
     PhotoOverlay,
     TaskEditOverlay,
+    TaskShareOverlay,
   },
   data() {
     return {
@@ -100,6 +101,8 @@ export default {
       overlayPhoto: '',
       currentlyEditing: false,
       currentlyEditTask: {},
+      currentlySharing: false,
+      currentlySharingTask: {},
     };
   },
   computed: {
@@ -112,11 +115,14 @@ export default {
       const dates = this.getDates;
       const data = {};
       for (let i = 0; i < dates.length; i += 1) {
-        data[dates[i]] = this.tasks.map((item) => {
-          if (item.finishDate.substring(0, 10) === dates[i]) {
-            return item;
-          } return false;
-        }).filter((item) => !!item);
+        data[dates[i]] = this.tasks
+          .map((item) => {
+            if (item.finishDate.substring(0, 10) === dates[i]) {
+              return item;
+            }
+            return false;
+          })
+          .filter((item) => !!item);
       }
       return Object.values(data);
     },
@@ -126,6 +132,10 @@ export default {
       return DateTime.fromISO(date)
         .setLocale('ua')
         .toFormat('dd LLL yyyy');
+    },
+    shareItem(task) {
+      this.currentlySharingTask = task;
+      this.currentlySharing = true;
     },
     delItem(id) {
       this.$emit('delete', id);
