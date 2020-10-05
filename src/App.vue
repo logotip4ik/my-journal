@@ -1,14 +1,8 @@
 <template>
   <v-app :dark="darkMode" :class="darkMode ? 'dark-background' : null">
     <v-main :dark="darkMode">
-      <Navbar
-       :dark="darkMode"
-       @add-task="toggleViewTaskOverlay"/>
-      <TaskOverlay
-        :db="db"
-        :dark="darkMode"
-        @close="closeOverlay"
-        :show="showTaskOverlay"/>
+      <Navbar :dark="darkMode" @add-task="toggleViewTaskOverlay" />
+      <TaskOverlay :db="db" :dark="darkMode" @close="closeOverlay" :show="showTaskOverlay" />
       <TaskGrid
         :db="db"
         :dark="darkMode"
@@ -16,7 +10,8 @@
         @delete="deleteItem"
         @update-task="updateTask"
         @delete-item-photo="deleteItemPhoto"
-        @delete-items="deleteItems"/>
+        @delete-items="deleteItems"
+      />
       <v-btn fab fixed bottom left @click="toggleMode" :dark="darkMode">
         <v-icon v-if="darkMode">mdi-white-balance-sunny</v-icon>
         <v-icon v-else>mdi-weather-night</v-icon>
@@ -60,8 +55,14 @@ export default {
         }
       },
     });
-    const tasks = await db.getAll('homework');
     this.db = db;
+    const params = await new URLSearchParams(window.location.search);
+    if (params.has('shared_task')) {
+      await db.put('homework', JSON.parse(atob(params.get('shared_task'))));
+      const url = window.location.href.split('?')[0];
+      window.history.pushState('', '', url);
+    }
+    const tasks = await db.getAll('homework');
     this.tasks = tasks;
   },
   computed: {
@@ -88,16 +89,12 @@ export default {
     async deleteItemPhoto(id) {
       const newItem = await this.db.get('homework', id);
       newItem.photo = null;
-      this.tasks = this.tasks.map((item) => (
-        item.id === newItem.id ? newItem : item
-      ));
+      this.tasks = this.tasks.map((item) => (item.id === newItem.id ? newItem : item));
       this.db.delete('homework', id);
       this.db.add('homework', newItem);
     },
     async updateTask(task) {
-      this.tasks = this.tasks.map((item) => (
-        item.id === task.id ? task : item
-      ));
+      this.tasks = this.tasks.map((item) => (item.id === task.id ? task : item));
       await this.db.delete('homework', task.id);
       await this.db.add('homework', task);
     },
@@ -114,6 +111,6 @@ export default {
 
 <style scoped>
 .dark-background {
-  background-color: black!important;
+  background-color: black !important;
 }
 </style>
