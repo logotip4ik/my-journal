@@ -1,9 +1,12 @@
 <template>
   <v-dialog max-width="400" max-height="610" v-model="value">
     <v-card :dark="dark" max-width="400" max-height="610">
-      <div class="d-flex flex-column mb-2">
+      <div class="d-flex flex-column mb-2" v-if="urlToQrCode">
         <h1 class="heading ml-2">QR code:</h1>
         <v-img :src="urlToQrCode" :height="showWarning ? 100 : null" contain />
+      </div>
+      <div class="d-flex flex-column mb-2" v-else>
+        <h1 class="heading ml-2">Data is to big to share via QR code!</h1>
       </div>
       <v-divider />
       <v-card-actions v-show="!showWarning">
@@ -67,10 +70,15 @@ export default {
       if (!this.show && !this.task) return '';
       const qr = qrcode(0, 'L');
 
-      qr.addData(this.urlToShare);
-      qr.make();
+      try {
+        qr.addData(this.urlToShare);
+        qr.make();
 
-      return qr.createDataURL();
+        return qr.createDataURL();
+      } catch (error) {
+        console.log(error);
+      }
+      return null;
     },
   },
   methods: {

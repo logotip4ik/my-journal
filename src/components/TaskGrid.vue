@@ -50,12 +50,6 @@
       </v-list>
     </v-slide-y-transition>
     <PhotoOverlay :value="value" :photo="overlayPhoto" @close="value = !value" />
-    <TaskShareOverlay
-      :dark="dark"
-      :show="currentlySharing"
-      :task="currentlySharingTask"
-      @close="currentlySharing = false"
-    />
     <TaskEditOverlay
       :db="db"
       :dark="dark"
@@ -65,6 +59,15 @@
       @delete-item-photo="emitDeleteItemPhoto"
       @close="currentlyEditing = false"
     />
+    <TaskShareOverlay
+      :dark="dark"
+      :show="currentlySharing"
+      :task="currentlySharingTask"
+      @close="currentlySharing = false"
+    />
+    <v-snackbar v-model="currentlySharing" color="warning">
+      Currently photos are not shared
+    </v-snackbar>
   </v-container>
 </template>
 
