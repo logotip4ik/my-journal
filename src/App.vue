@@ -58,7 +58,7 @@ export default {
     this.db = db;
     const params = await new URLSearchParams(window.location.search);
     if (params.has('shared_task')) {
-      await db.put('homework', JSON.parse(atob(params.get('shared_task'))));
+      await db.put('homework', JSON.parse(decodeURI(atob(params.get('shared_task')))));
       const url = window.location.href.split('?')[0];
       window.history.pushState('', '', url);
     }

@@ -64,7 +64,13 @@ export default {
         ...this.task,
         photo: null,
       };
-      return `${window.location.href}?shared_task=${btoa(JSON.stringify(taskToShare))}`;
+      // const keys = Object.keys(this.item);
+      // const values = Object.values(this.item);
+      // const taskToShare = {};
+      // for (let i; i < keys.length; i += 1) {
+      //   taskToShare[keys[i]] = encodeURI()
+      // }
+      return `${window.location.href}?shared_task=${btoa(encodeURI(JSON.stringify(taskToShare)))}`;
     },
     urlToQrCode() {
       if (!this.show && !this.task) return '';
