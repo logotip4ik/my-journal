@@ -133,7 +133,7 @@ export default {
   methods: {
     formatDate(date) {
       return DateTime.fromISO(date)
-        .setLocale('ua')
+        .setLocale('uk')
         .toFormat('dd LLL yyyy');
     },
     shareItem(task) {
