@@ -1,11 +1,13 @@
 <template>
   <li class="item-container">
-    <!-- <button class="item__button item__button--share"></button> -->
+    <button class="item__button item__button--share" @click="$emit('self-share')">
+      <img src="@/assets/reply-white-18dp.svg" alt="" />
+    </button>
     <div :class="{ item: true, 'item--dark': darkMode }" ref="item">
       <h2 class="item__heading"><slot></slot></h2>
       <p v-html="$slots.task()[0].children"></p>
     </div>
-    <button class="item__button item__button--delete" @click="$emit('selfDelete')"></button>
+    <button class="item__button item__button--delete" @click="$emit('self-delete')"></button>
   </li>
 </template>
 
@@ -19,35 +21,32 @@ export default {
   setup() {
     const item = ref(null);
     let hammertime;
-    let globalDeltaX;
 
     const darkMode = inject('darkMode');
+    const showingShare = inject('showingShare');
 
     function slideItemToX(x) {
-      gsap.fromTo(
-        item.value,
-        {
-          translateX: `${globalDeltaX}px`,
-        },
-        {
-          translateX: `${x}px`,
-          onComplete: () => {
-            globalDeltaX = x;
-          },
-        },
-      );
+      gsap.to(item.value, {
+        translateX: `${x}px`,
+        duration: 0.3,
+      });
     }
 
     onMounted(() => {
-      hammertime = new Hammer(item.value);
+      hammertime = new Hammer.Manager(item.value);
+
+      hammertime.add(new Hammer.Tap({ event: 'doubletap', taps: 2 }));
+      hammertime.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 0 }));
+
+      hammertime.on('doubletap', () => {
+        showingShare.value = true;
+      });
       hammertime.on('panstart panmove', ({ deltaX }) => {
         if (deltaX > -100 && deltaX < 100) {
-          globalDeltaX = deltaX;
-          item.value.style.transform = `translate3d(${deltaX}px, 0, 0)`;
+          slideItemToX(deltaX);
         } else {
           const overDeltaX = (deltaX < 0 ? -100 : 100) + deltaX * 0.075;
-          item.value.style.transform = `translate3d(${overDeltaX}px, 0, 0)`;
-          globalDeltaX = overDeltaX;
+          slideItemToX(overDeltaX);
         }
       });
       hammertime.on('hammer.input', ({ isFinal, deltaX }) => {
@@ -68,7 +67,7 @@ export default {
       darkMode,
     };
   },
-  emits: ['selfDelete'],
+  emits: ['self-delete', 'self-share'],
 };
 </script>
 
@@ -83,8 +82,8 @@ export default {
   padding: 0.5rem;
   box-shadow: 0 0 10px 0 rgba($color: #000000, $alpha: 0.1);
   border: 1px solid transparent;
-  transition: border-color 400ms ease-out;
   background-color: white;
+  transition: border-color 400ms ease-out, background-color 400ms ease-out;
   &--dark {
     border-color: rgba($color: #ffffff, $alpha: 0.1);
     background-color: #1f2022;
@@ -120,6 +119,7 @@ export default {
     position: absolute;
     height: 100%;
     width: 200px;
+    max-width: 50%;
     top: 0;
     z-index: -1;
     appearance: none;
@@ -129,10 +129,20 @@ export default {
     padding: 0.5rem;
     border-radius: 0.25rem;
 
+    &--share {
+      left: 0;
+      background-color: rgb(32, 76, 172);
+
+      img {
+        position: absolute;
+        left: 27px;
+        transform: translate(0, -55%);
+        height: 50px;
+        width: auto;
+      }
+    }
+
     &--delete {
-      border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
-      padding-left: 0;
       right: 0;
       background-color: rgb(167, 0, 0);
 

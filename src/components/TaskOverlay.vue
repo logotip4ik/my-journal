@@ -80,38 +80,6 @@ export default {
       resizeTextarea,
     };
   },
-  // props: {
-  //   db: IDBDatabase,
-  //   dark: {
-  //     type: Boolean,
-  //     required: true,
-  //     default: false,
-  //   },
-  //   show: {
-  //     type: Boolean,
-  //     required: true,
-  //     default: false,
-  //   },
-  // },
-  // data() {
-  //   return {
-  //     task: '',
-  //     photo: null,
-  //     error: false,
-  //     className: '',
-  //     finishDate: DateTime.local().plus({ days: 1 }).toISODate(),
-  //   };
-  // },
-  // methods: {
-  //   close() {
-  //     this.$emit('close');
-  //   },
-  //   async addTask() {
-  //     if (!this.className || !this.task || !this.finishDate) {
-  //       this.error = true;
-  //       return;
-  //     }
-  //     this.error = false;
   //     if (this.photo) {
   //       const reader = new FileReader();
   //       reader.readAsBinaryString(this.photo);
@@ -131,22 +99,6 @@ export default {
   //         this.finishDate = DateTime.local().plus({ days: 1 }).toISODate();
   //         this.$emit('close', data);
   //       };
-  //     } else {
-  //       const data = {
-  //         id: v4(),
-  //         task: this.task,
-  //         className: this.className,
-  //         finishDate: DateTime.fromISO(this.finishDate).toISO(),
-  //         createdDate: DateTime.local().toISO(),
-  //       };
-  //       await this.db.add('homework', data);
-  //       this.className = '';
-  //       this.task = '';
-  //       this.finishDate = DateTime.local().plus({ days: 1 }).toISODate();
-  //       this.$emit('close', data);
-  //     }
-  //   },
-  // },
 };
 </script>
 

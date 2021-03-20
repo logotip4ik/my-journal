@@ -271,7 +271,7 @@ export default {
 
 .list-enter-active,
 .list-leave-active {
-  transition: all 400ms ease;
+  transition: transform 400ms ease, opacity 400ms ease;
 }
 .list-leave-active {
   position: absolute;
@@ -285,6 +285,6 @@ export default {
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
-  transform: translateX(-200px);
+  transform: translateX(-300px);
 }
 </style>

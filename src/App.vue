@@ -18,17 +18,19 @@
       </v-btn>
     </v-main>
   </v-app> -->
-  <div :class="{ main: true, 'main--dark': darkMode }">
+  <div :class="{ main: true, 'main--dark': darkMode, 'main--sharing-task': showingShare }">
     <Navbar />
     <TaskOverlay />
     <TaskGrid />
-    <button class="toggleDarkMode" @click="darkMode = !darkMode">TOGGLE</button>
+    <TaskShareOverlay />
+    <button class="toggleDarkMode" @click="toggleDarkMode">TOGGLE</button>
   </div>
 </template>
 
 <script>
 // eslint-disable-next-line
-import { onMounted, provide, reactive, ref, watch } from 'vue';
+import { onMounted, provide, reactive, ref } from 'vue';
+import { useDark, useToggle } from '@vueuse/core';
 import { DateTime } from 'luxon';
 import { v4 } from 'uuid';
 
@@ -37,14 +39,17 @@ import useDB from './hooks/useDB';
 import Navbar from './components/Navbar.vue';
 import TaskOverlay from './components/TaskOverlay.vue';
 import TaskGrid from './components/TaskGrid.vue';
+import TaskShareOverlay from './components/TaskShareOverlay.vue';
 
 export default {
   name: 'App',
   setup() {
     const db = useDB('journal-store', 2);
     const tasks = ref([]);
-    const darkMode = ref(false);
+    const darkMode = useDark();
+    const toggleDarkMode = useToggle(darkMode);
     const creatingTask = ref(false);
+    const showingShare = ref(false);
     const newTask = reactive({
       className: '',
       task: '',
@@ -53,8 +58,6 @@ export default {
         .toISODate(),
     });
 
-    watch(darkMode, (valueDarkMode) => localStorage.setItem('__darkMode', valueDarkMode));
-
     function resetNewTask() {
       creatingTask.value = false;
       newTask.className = '';
@@ -62,6 +65,9 @@ export default {
       newTask.finishDate = DateTime.local()
         .plus({ days: 1 })
         .toISODate();
+    }
+    function resetShare() {
+      showingShare.value = false;
     }
 
     async function addNewTask() {
@@ -77,13 +83,6 @@ export default {
       await db.homework.delete(taskId);
     }
 
-    function checkForDarkMode() {
-      const dark = localStorage.getItem('__darkMode');
-      if (dark) {
-        darkMode.value = JSON.parse(dark);
-      }
-    }
-
     async function checkForSharedTask() {
       const params = new URLSearchParams(window.location.search);
       if (params.has('shared_task')) {
@@ -95,7 +94,6 @@ export default {
     }
 
     onMounted(() => {
-      checkForDarkMode();
       checkForSharedTask();
     });
 
@@ -103,20 +101,24 @@ export default {
     provide('tasks', tasks);
     provide('darkMode', darkMode);
     provide('creatingTask', creatingTask);
+    provide('showingShare', showingShare);
     provide('newTask', newTask);
     provide('resetNewTask', resetNewTask);
+    provide('resetShare', resetShare);
     provide('addNewTask', addNewTask);
     provide('deleteTask', deleteTask);
 
     return {
       darkMode,
-      tasks,
+      toggleDarkMode,
+      showingShare,
     };
   },
   components: {
     Navbar,
     TaskGrid,
     TaskOverlay,
+    TaskShareOverlay,
     //   TaskOverlay,
   },
   // data() {
@@ -218,6 +220,9 @@ body {
   &--dark {
     color: white;
     background-color: #1f2022;
+  }
+  &--sharing-task {
+    overflow-y: hidden;
   }
 }
 .toggleDarkMode {
