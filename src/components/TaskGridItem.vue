@@ -1,6 +1,6 @@
 <template>
   <li class="item-container">
-    <button class="item__button item__button--share" @click="$emit('self-share')">
+    <button class="item__button item__button--share" @click="$emit('self-share'), slideItemToX(0)">
       <img src="@/assets/reply-white-18dp.svg" alt="" />
     </button>
     <div :class="{ item: true, 'item--dark': darkMode }" ref="item">
@@ -23,7 +23,6 @@ export default {
     let hammertime;
 
     const darkMode = inject('darkMode');
-    const showingShare = inject('showingShare');
 
     function slideItemToX(x) {
       gsap.to(item.value, {
@@ -39,7 +38,8 @@ export default {
       hammertime.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 0 }));
 
       hammertime.on('doubletap', () => {
-        showingShare.value = true;
+        // TODO: eddit task
+        // showingShare.value = true;
       });
       hammertime.on('panstart panmove', ({ deltaX }) => {
         if (deltaX > -100 && deltaX < 100) {
@@ -65,6 +65,7 @@ export default {
     return {
       item,
       darkMode,
+      slideItemToX,
     };
   },
   emits: ['self-delete', 'self-share'],

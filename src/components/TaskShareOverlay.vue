@@ -23,8 +23,9 @@
   <transition name="fall">
     <div class="card-container" v-if="showingShare">
       <div :class="{ card: true, 'card--dark': darkMode }" ref="card">
+        {{ sharingTask }}
         <!-- asdasdasdasdasdasda sd a sd asd a sd -->
-        <img src="https://via.placeholder.com/400" alt="" />
+        <!-- <img src="https://via.placeholder.com/400" alt="" /> -->
       </div>
     </div>
   </transition>
@@ -43,6 +44,7 @@ export default {
 
     const darkMode = inject('darkMode');
     const resetShare = inject('resetShare');
+    const sharingTask = inject('sharingTask');
     const showingShare = inject('showingShare');
 
     function checkForKey(ev) {
@@ -95,6 +97,7 @@ export default {
       card,
       darkMode,
       showingShare,
+      sharingTask,
       resetShare,
     };
   },
@@ -192,6 +195,7 @@ export default {
   background-color: white;
   padding: 0.5rem;
   max-height: 95vh;
+  max-width: 600px;
   transition: border-color 400ms ease-out, background-color 400ms ease-out;
 
   &--dark {

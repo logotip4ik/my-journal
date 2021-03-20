@@ -50,6 +50,7 @@ export default {
     const toggleDarkMode = useToggle(darkMode);
     const creatingTask = ref(false);
     const showingShare = ref(false);
+    const sharingTask = ref(null);
     const newTask = reactive({
       className: '',
       task: '',
@@ -78,6 +79,10 @@ export default {
       tasks.value.push(task);
     }
 
+    function shareTask(task) {
+      sharingTask.value = task;
+      showingShare.value = true;
+    }
     async function deleteTask(taskId) {
       tasks.value = tasks.value.filter(({ id }) => id !== taskId);
       await db.homework.delete(taskId);
@@ -102,11 +107,13 @@ export default {
     provide('darkMode', darkMode);
     provide('creatingTask', creatingTask);
     provide('showingShare', showingShare);
+    provide('sharingTask', sharingTask);
     provide('newTask', newTask);
     provide('resetNewTask', resetNewTask);
     provide('resetShare', resetShare);
     provide('addNewTask', addNewTask);
     provide('deleteTask', deleteTask);
+    provide('shareTask', shareTask);
 
     return {
       darkMode,

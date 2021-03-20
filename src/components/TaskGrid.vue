@@ -79,7 +79,8 @@
           <TaskGridItem
             v-for="task in sortedTasks[date]"
             :key="task.id"
-            @selfDelete="deleteTask(task.id)"
+            @self-delete="deleteTask(task.id)"
+            @self-share="shareTask(task)"
           >
             <template #default>{{ task.className }}</template>
             <template #task>{{ formatTask(task.task) }}</template>
@@ -106,6 +107,7 @@ export default {
   setup() {
     const tasks = inject('tasks');
     const darkMode = inject('darkMode');
+    const shareTask = inject('shareTask');
     const deleteTask = inject('deleteTask');
 
     const taskDates = computed(() => {
@@ -142,6 +144,7 @@ export default {
       darkMode,
       formatDate,
       formatTask,
+      shareTask,
       deleteTask,
     };
   },
