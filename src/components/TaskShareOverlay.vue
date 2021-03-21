@@ -1,41 +1,23 @@
 <template>
-  <!-- <v-dialog max-width="400" max-height="610" v-model="value">
-    <v-card :dark="dark" max-width="400" max-height="610">
-      <div class="d-flex flex-column mb-2" v-if="urlToQrCode">
-        <h1 class="heading ml-2">QR code:</h1>
-        <v-img :src="urlToQrCode" :height="showWarning ? 100 : null" contain />
-      </div>
-      <div class="d-flex flex-column mb-2" v-else>
-        <h1 class="heading ml-2">Data is to big to share via QR code!</h1>
-      </div>
-      <v-divider />
-      <v-card-actions v-show="!showWarning">
-        <v-spacer />
-        <v-btn class="mt-2" :dark="dark" @click="copyURL">Copy just the URl</v-btn>
-        <v-spacer />
-      </v-card-actions>
-      <div v-show="showWarning" class="px-2 pb-2">
-        <h3>Your browser does not support clipboard. Just copy url manually</h3>
-        <code>{{ urlToShare }}</code>
-      </div>
-    </v-card>
-  </v-dialog> -->
   <transition name="fall">
     <div class="card-container" v-if="showingShare">
       <div :class="{ card: true, 'card--dark': darkMode }" ref="card">
-        {{ sharingTask }}
-        <!-- asdasdasdasdasdasda sd a sd asd a sd -->
-        <!-- <img src="https://via.placeholder.com/400" alt="" /> -->
+        <img :src="urlToQrCode" alt="" />
+        OR
+        <button :class="{ card__button: true, 'card__button--dark': darkMode }" @click="copyURL">
+          Copy URL
+        </button>
       </div>
     </div>
   </transition>
 </template>
 
 <script>
-import { inject, ref, watch } from 'vue';
+// eslint-disable-next-line
+import { computed, inject, ref, watch } from 'vue';
 import Hammer from 'hammerjs';
 import gsap from 'gsap';
-// import qrcode from 'qrcode-generator';
+import qrcode from 'qrcode-generator';
 
 export default {
   name: 'TaskShareOverlay',
@@ -47,6 +29,36 @@ export default {
     const sharingTask = inject('sharingTask');
     const showingShare = inject('showingShare');
 
+    const shareTaskUrl = computed(() => {
+      if (!sharingTask.value) return '';
+      const encodedURI = encodeURI(JSON.stringify(sharingTask.value));
+      return `${window.location.href}?shared_task=${btoa(encodedURI)}`;
+    });
+    const urlToQrCode = computed(() => {
+      const qr = qrcode(0, 'L');
+      qr.addData(shareTaskUrl.value);
+      qr.make();
+
+      return qr.createDataURL(4, 0);
+    });
+
+    async function copyURL() {
+      if (!navigator.clipboard) {
+        console.warn('clipboard not supported');
+
+        const copyhelper = document.createElement('input');
+        copyhelper.style.position = 'fixed';
+        copyhelper.style.top = '-100%';
+        document.body.appendChild(copyhelper);
+        copyhelper.value = shareTaskUrl.value;
+        copyhelper.select();
+        document.execCommand('copy');
+        document.body.removeChild(copyhelper);
+      } else {
+        await navigator.clipboard.writeText(shareTaskUrl.value);
+      }
+      resetShare();
+    }
     function checkForKey(ev) {
       if (ev.key === 'Escape') resetShare();
     }
@@ -99,6 +111,8 @@ export default {
       showingShare,
       sharingTask,
       resetShare,
+      copyURL,
+      urlToQrCode,
     };
   },
   // data() {
@@ -195,7 +209,11 @@ export default {
   background-color: white;
   padding: 0.5rem;
   max-height: 95vh;
-  max-width: 600px;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   transition: border-color 400ms ease-out, background-color 400ms ease-out;
 
   &--dark {
@@ -207,7 +225,40 @@ export default {
     display: block;
     width: 100%;
     height: auto;
-    user-select: none;
+    touch-action: none;
+    margin-bottom: 0.5rem;
+  }
+  &__button {
+    display: inline-block;
+    max-width: 150px;
+    padding: 0.5rem 1.25rem;
+    margin-top: 0.5rem;
+    appearance: none;
+    font: inherit;
+    font-size: 1rem;
+    text-transform: uppercase;
+    box-shadow: 0 0 10px 0 rgba($color: #000000, $alpha: 0.1),
+      inset 0 0 10px 0 rgba($color: #000000, $alpha: 0.1);
+    border-radius: 0.25rem;
+    border: 1px solid rgba($color: #000000, $alpha: 0.25);
+    outline: none;
+    background-color: transparent;
+    transition: border-color 400ms ease-out, background-color 200ms ease-out, color 200ms ease-out;
+
+    &:hover {
+      background-color: lighten($color: #000000, $amount: 20);
+      color: white;
+    }
+
+    &--dark {
+      border-color: rgba($color: white, $alpha: 0.5);
+      color: white;
+
+      &:hover {
+        background-color: lighten($color: white, $amount: 20);
+        color: black;
+      }
+    }
   }
 }
 

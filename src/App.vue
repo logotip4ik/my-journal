@@ -69,6 +69,7 @@ export default {
     }
     function resetShare() {
       showingShare.value = false;
+      sharingTask.value = null;
     }
 
     async function addNewTask() {
@@ -91,7 +92,8 @@ export default {
     async function checkForSharedTask() {
       const params = new URLSearchParams(window.location.search);
       if (params.has('shared_task')) {
-        await db.homework.put(JSON.parse(decodeURI(atob(params.get('shared_task')))));
+        const sharedTask = JSON.parse(decodeURI(atob(params.get('shared_task'))));
+        await db.homework.put({ ...sharedTask, id: v4() });
         const url = window.location.href.split('?')[0];
         window.history.pushState('', '', url);
       }
