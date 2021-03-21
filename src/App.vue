@@ -1,29 +1,30 @@
 <template>
-  <!-- <v-app :dark="darkMode" :class="darkMode ? 'dark-background' : null">
-    <v-main :dark="darkMode">
-      <Navbar :dark="darkMode" @add-task="toggleViewTaskOverlay" />
-      <TaskOverlay :db="db" :dark="darkMode" @close="closeOverlay" :show="showTaskOverlay" />
-      <TaskGrid
-        :db="db"
-        :dark="darkMode"
-        :tasks="tasks"
-        @delete="deleteItem"
-        @update-task="updateTask"
-        @delete-item-photo="deleteItemPhoto"
-        @delete-items="deleteItems"
-      />
-      <v-btn fab fixed bottom left @click="toggleMode" :dark="darkMode">
-        <v-icon v-if="darkMode">mdi-white-balance-sunny</v-icon>
-        <v-icon v-else>mdi-weather-night</v-icon>
-      </v-btn>
-    </v-main>
-  </v-app> -->
   <div :class="{ main: true, 'main--dark': darkMode, 'main--sharing-task': showingShare }">
     <Navbar />
     <TaskOverlay />
     <TaskGrid />
     <TaskShareOverlay />
-    <button class="toggleDarkMode" @click="toggleDarkMode">TOGGLE</button>
+    <div class="button-container">
+      <button
+        :class="{ main__button: true, 'main__button--dark': darkMode }"
+        @click="toggleDarkMode"
+      >
+        <transition name="fade">
+          <img
+            v-if="!darkMode"
+            src="@/assets/dark_mode-black-18dp.svg"
+            alt="dark mode icon"
+            class="main__button__icon"
+          />
+          <img
+            v-else
+            src="@/assets/light_mode-white-18dp.svg"
+            alt="light mode icon"
+            class="main__button__icon"
+          />
+        </transition>
+      </button>
+    </div>
   </div>
 </template>
 
@@ -128,80 +129,7 @@ export default {
     TaskGrid,
     TaskOverlay,
     TaskShareOverlay,
-    //   TaskOverlay,
   },
-  // data() {
-  //   return {
-  //     showTaskOverlay: false,
-  //     tasks: [],
-  //     db: null,
-  //     darkMode: false,
-  //   };
-  // },
-  // async mounted() {
-  //   if (localStorage.darkMode) {
-  //     this.darkMode = JSON.parse(localStorage.darkMode);
-  //   }
-  //   const db = await openDB('journal-store', 1, {
-  //     upgrade(dataBase) {
-  //       if (!dataBase.objectStoreNames.contains('homework')) {
-  //         dataBase.createObjectStore('homework', {
-  //           keyPath: 'id',
-  //         });
-  //       }
-  //     },
-  //   });
-  //   this.db = db;
-  //   const params = await new URLSearchParams(window.location.search);
-  //   if (params.has('shared_task')) {
-  //     await db.put('homework', JSON.parse(decodeURI(atob(params.get('shared_task')))));
-  //     const url = window.location.href.split('?')[0];
-  //     window.history.pushState('', '', url);
-  //   }
-  //   const tasks = await db.getAll('homework');
-  //   this.tasks = tasks;
-  // },
-  // computed: {
-  //   sortedTasks() {
-  //     const { tasks } = this;
-  //     if (tasks.length === 0) return [];
-  //     return tasks.sort((a, b) => new Date(a.finishDate) - new Date(b.finishDate));
-  //   },
-  // },
-  // methods: {
-  //   closeOverlay(task) {
-  //     if (task) {
-  //       this.tasks.push(task);
-  //     }
-  //     this.showTaskOverlay = !this.showTaskOverlay;
-  //   },
-  //   deleteItem(id) {
-  //     this.db.delete('homework', id);
-  //     this.tasks = this.tasks.filter((task) => task.id !== id);
-  //   },
-  //   deleteItems(items) {
-  //     items.forEach(({ id }) => this.deleteItem(id));
-  //   },
-  //   async deleteItemPhoto(id) {
-  //     const newItem = await this.db.get('homework', id);
-  //     newItem.photo = null;
-  //     this.tasks = this.tasks.map((item) => (item.id === newItem.id ? newItem : item));
-  //     this.db.delete('homework', id);
-  //     this.db.add('homework', newItem);
-  //   },
-  //   async updateTask(task) {
-  //     this.tasks = this.tasks.map((item) => (item.id === task.id ? task : item));
-  //     await this.db.delete('homework', task.id);
-  //     await this.db.add('homework', task);
-  //   },
-  //   toggleMode() {
-  //     this.darkMode = !this.darkMode;
-  //     localStorage.darkMode = this.darkMode;
-  //   },
-  //   toggleViewTaskOverlay() {
-  //     this.showTaskOverlay = !this.showTaskOverlay;
-  //   },
-  // },
 };
 </script>
 
@@ -233,10 +161,46 @@ body {
   &--sharing-task {
     overflow-y: hidden;
   }
+
+  .button-container {
+    position: fixed;
+    bottom: 3rem;
+    right: 1.5rem;
+  }
+
+  &__button {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 1px solid #999;
+    background-color: white;
+    box-shadow: 0 0 10px 0 rgba($color: #000000, $alpha: 0.2),
+      inset 0 0 5px 0 rgba($color: #000000, $alpha: 0.1);
+    transition: background-color 400ms ease-out;
+
+    &--dark {
+      background-color: #1f2022;
+    }
+
+    &__icon {
+      width: 35px;
+      height: 35px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
 }
-.toggleDarkMode {
-  position: fixed;
-  bottom: 2rem;
-  left: 2rem;
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 400ms ease-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
