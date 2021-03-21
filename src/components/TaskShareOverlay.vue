@@ -112,6 +112,7 @@ export default {
       sharingTask,
       resetShare,
       copyURL,
+      qrcode,
       urlToQrCode,
     };
   },
