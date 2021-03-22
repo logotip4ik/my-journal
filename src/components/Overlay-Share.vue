@@ -116,77 +116,6 @@ export default {
       urlToQrCode,
     };
   },
-  // data() {
-  //   return {
-  //     showWarning: false,
-  //   };
-  // },
-  // props: {
-  //   dark: {
-  //     type: Boolean,
-  //     required: true,
-  //     default: false,
-  //   },
-  //   show: {
-  //     type: Boolean,
-  //     required: true,
-  //     default: false,
-  //   },
-  //   task: {
-  //     type: Object,
-  //     required: true,
-  //     default: () => ({}),
-  //   },
-  // },
-  // computed: {
-  //   value: {
-  //     get() {
-  //       return this.show;
-  //     },
-  //     set() {
-  //       this.$emit('close');
-  //     },
-  //   },
-  //   urlToShare() {
-  //     if (!this.task) return '';
-  //     const taskToShare = {
-  //       ...this.task,
-  //       photo: null,
-  //     };
-  //     // const keys = Object.keys(this.item);
-  //     // const values = Object.values(this.item);
-  //     // const taskToShare = {};
-  //     // for (let i; i < keys.length; i += 1) {
-  //     //   taskToShare[keys[i]] = encodeURI()
-  //     // }
-  //     return `${window.location.href}
-  // ? shared_task=${btoa(encodeURI(JSON.stringify(taskToShare)))}`;
-  //   },
-  //   urlToQrCode() {
-  //     if (!this.show && !this.task) return '';
-  //     const qr = qrcode(0, 'L');
-
-  //     try {
-  //       qr.addData(this.urlToShare);
-  //       qr.make();
-
-  //       return qr.createDataURL();
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //     return null;
-  //   },
-  // },
-  // methods: {
-  //   copyURL() {
-  //     if (navigator.clipboard) {
-  //       navigator.clipboard.writeText(this.urlToShare);
-  //       this.$emit('close');
-  //       return;
-  //     }
-  //     this.showWarning = true;
-  //   },
-  // },
 };
 </script>
 
@@ -261,16 +190,5 @@ export default {
       }
     }
   }
-}
-
-.fall-enter-active,
-.fall-leave-active {
-  transition: opacity 400ms ease, transform 400ms ease;
-}
-
-.fall-leave-to,
-.fall-enter-from {
-  opacity: 0;
-  transform: scale(1.5);
 }
 </style>

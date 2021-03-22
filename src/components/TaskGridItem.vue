@@ -18,7 +18,7 @@ import gsap from 'gsap';
 
 export default {
   name: 'TaskGridItem',
-  setup() {
+  setup(_, { emit }) {
     const item = ref(null);
     let hammertime;
 
@@ -38,8 +38,7 @@ export default {
       hammertime.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 0 }));
 
       hammertime.on('doubletap', () => {
-        // TODO: eddit task
-        // showingShare.value = true;
+        emit('self-edit');
       });
       hammertime.on('panstart panmove', ({ deltaX }) => {
         if (deltaX > -100 && deltaX < 100) {
@@ -68,7 +67,7 @@ export default {
       slideItemToX,
     };
   },
-  emits: ['self-delete', 'self-share'],
+  emits: ['self-delete', 'self-share', 'self-edit'],
 };
 </script>
 

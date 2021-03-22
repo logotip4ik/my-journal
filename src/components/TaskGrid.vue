@@ -11,6 +11,7 @@
             :key="task.id"
             @self-delete="deleteTask(task.id)"
             @self-share="shareTask(task)"
+            @self-edit="editTask(task)"
           >
             <template #default>{{ task.className }}</template>
             <template #task>{{ formatTask(task.task) }}</template>
@@ -36,6 +37,7 @@ export default {
     const darkMode = inject('darkMode');
     const shareTask = inject('shareTask');
     const deleteTask = inject('deleteTask');
+    const editTask = inject('editTask');
 
     const taskDates = computed(() => {
       const dates = new Set(tasks.value.map((task) => task.finishDate.substring(0, 10)));
@@ -73,6 +75,7 @@ export default {
       formatTask,
       shareTask,
       deleteTask,
+      editTask,
     };
   },
   components: {

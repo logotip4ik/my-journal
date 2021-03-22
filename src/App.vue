@@ -1,9 +1,10 @@
 <template>
-  <div :class="{ main: true, 'main--dark': darkMode, 'main--sharing-task': showingShare }">
+  <div :class="{ main: true, 'main--dark': darkMode, 'main--lock-y': showingShare || showingEdit }">
     <Navbar />
-    <TaskOverlay />
     <TaskGrid />
-    <TaskShareOverlay />
+    <OverlayEdit />
+    <OverlayShare />
+    <OverlayCreateTask />
     <div class="button-container">
       <button
         :class="{ main__button: true, 'main__button--dark': darkMode }"
@@ -38,9 +39,10 @@ import { v4 } from 'uuid';
 import useDB from './hooks/useDB';
 
 import Navbar from './components/Navbar.vue';
-import TaskOverlay from './components/TaskOverlay.vue';
 import TaskGrid from './components/TaskGrid.vue';
-import TaskShareOverlay from './components/TaskShareOverlay.vue';
+import OverlayEdit from './components/Overlay-Edit.vue';
+import OverlayShare from './components/Overlay-Share.vue';
+import OverlayCreateTask from './components/Overlay-CreateTask.vue';
 
 export default {
   name: 'App',
@@ -51,7 +53,9 @@ export default {
     const toggleDarkMode = useToggle(darkMode);
     const creatingTask = ref(false);
     const showingShare = ref(false);
+    const showingEdit = ref(false);
     const sharingTask = ref(null);
+    const editingTask = ref(null);
     const newTask = reactive({
       className: '',
       task: '',
@@ -72,6 +76,10 @@ export default {
       showingShare.value = false;
       sharingTask.value = null;
     }
+    function resetEdit() {
+      showingEdit.value = false;
+      editingTask.value = null;
+    }
 
     async function addNewTask() {
       if (!newTask.className || !newTask.task || !newTask.finishDate) return;
@@ -88,6 +96,10 @@ export default {
     async function deleteTask(taskId) {
       tasks.value = tasks.value.filter(({ id }) => id !== taskId);
       await db.homework.delete(taskId);
+    }
+    function editTask(task) {
+      editingTask.value = task;
+      showingEdit.value = true;
     }
 
     async function checkForSharedTask() {
@@ -110,25 +122,31 @@ export default {
     provide('darkMode', darkMode);
     provide('creatingTask', creatingTask);
     provide('showingShare', showingShare);
+    provide('showingEdit', showingEdit);
     provide('sharingTask', sharingTask);
+    provide('editingTask', editingTask);
     provide('newTask', newTask);
     provide('resetNewTask', resetNewTask);
     provide('resetShare', resetShare);
+    provide('resetEdit', resetEdit);
     provide('addNewTask', addNewTask);
     provide('deleteTask', deleteTask);
     provide('shareTask', shareTask);
+    provide('editTask', editTask);
 
     return {
       darkMode,
       toggleDarkMode,
       showingShare,
+      showingEdit,
     };
   },
   components: {
     Navbar,
     TaskGrid,
-    TaskOverlay,
-    TaskShareOverlay,
+    OverlayEdit,
+    OverlayShare,
+    OverlayCreateTask,
   },
 };
 </script>
@@ -158,7 +176,7 @@ body {
     color: white;
     background-color: #1f2022;
   }
-  &--sharing-task {
+  &--lock-y {
     overflow-y: hidden;
   }
 
@@ -202,5 +220,16 @@ body {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.fall-enter-active,
+.fall-leave-active {
+  transition: opacity 400ms ease, transform 400ms ease;
+}
+
+.fall-leave-to,
+.fall-enter-from {
+  opacity: 0;
+  transform: scale(1.5);
 }
 </style>
