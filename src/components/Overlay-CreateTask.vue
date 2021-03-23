@@ -193,6 +193,8 @@ export default {
     font-size: 1.1rem;
     padding: 0.1rem;
     width: 100%;
+  }
+  textarea {
     resize: vertical;
   }
   &::after {

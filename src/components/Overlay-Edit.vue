@@ -2,7 +2,19 @@
   <transition name="fade">
     <div v-if="showingEdit" class="card-container">
       <div :class="{ card: true, 'card--dark': darkMode }" ref="card">
-        {{ editingTask }}
+        <div class="input-wrapper">
+          <label>Class Name</label><input v-model="editingTask.className" type="text" />
+        </div>
+        <div class="input-wrapper">
+          <label>Task</label><input v-model="editingTask.task" type="text" />
+        </div>
+        <div class="input-wrapper">
+          <label>Finish Date</label><input v-model="editingTask.finishDate" type="text" />
+        </div>
+        <div class="buttons">
+          <button class="buttons__save">Save</button>
+          <button class="buttons__reset">Reset</button>
+        </div>
       </div>
     </div>
   </transition>
@@ -102,16 +114,92 @@ export default {
   background-color: white;
   padding: 0.5rem;
   max-height: 95vh;
-  max-width: 500px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  max-width: 600px;
+  // display: flex;
+  // flex-direction: column;
+  // justify-content: center;
+  // align-items: center;
   transition: border-color 400ms ease-out, background-color 400ms ease-out;
 
   &--dark {
     border-color: rgba($color: #ffffff, $alpha: 0.1);
     background-color: #1f2022;
+
+    .input-wrapper {
+      label,
+      input,
+      textarea {
+        border-bottom-color: rgb(212, 212, 212);
+        color: rgb(212, 212, 212);
+      }
+      &:hover {
+        label {
+          color: white;
+        }
+        input,
+        textarea {
+          border-bottom-color: white;
+        }
+      }
+      &::after {
+        background-color: white;
+      }
+    }
+  }
+}
+.input-wrapper {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  position: relative;
+  &:hover {
+    label {
+      color: black;
+    }
+    input,
+    textarea {
+      border-bottom-color: black;
+    }
+  }
+  &:focus-within {
+    label {
+      color: currentColor;
+    }
+    &::after {
+      transform: scale(1);
+    }
+  }
+  label {
+    display: block;
+    font-size: 1.1rem;
+    color: #333;
+    transition: color 200ms ease-out;
+  }
+  input,
+  textarea {
+    appearance: none;
+    background-color: transparent;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid #333;
+    transition: border-bottom-color 200ms ease-out, color 200ms ease-out;
+    outline: none;
+    box-shadow: none;
+    font: inherit;
+    font-size: 1.1rem;
+    padding: 0.1rem;
+    width: 100%;
+    resize: vertical;
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: black;
+    transform: scale(0);
+    transition: transform 300ms ease-out;
   }
 }
 </style>

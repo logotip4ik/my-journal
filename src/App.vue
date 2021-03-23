@@ -64,7 +64,12 @@ export default {
 
     async function addNewTask() {
       if (!newTask.className || !newTask.task || !newTask.finishDate) return;
-      const task = { ...newTask, id: v4(), createdDate: DateTime.local().toISO() };
+      const task = {
+        ...newTask,
+        id: v4(),
+        createdDate: DateTime.local().toISO(),
+        updatedDate: DateTime.local().toISO(),
+      };
       await db.homework.put(task);
       resetNewTask();
       tasks.value.push(task);
