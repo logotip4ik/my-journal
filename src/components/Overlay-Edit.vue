@@ -1,7 +1,9 @@
 <template>
   <transition name="fade">
     <div v-if="showingEdit" class="card-container">
-      <div class="card" ref="card"></div>
+      <div :class="{ card: true, 'card--dark': darkMode }" ref="card">
+        {{ editingTask }}
+      </div>
     </div>
   </transition>
 </template>
@@ -16,6 +18,7 @@ export default {
   setup() {
     const card = ref(null);
 
+    const darkMode = inject('darkMode');
     const showingEdit = inject('showingEdit');
     const editingTask = inject('editingTask');
     const resetEdit = inject('resetEdit');
@@ -68,7 +71,12 @@ export default {
       }
     });
 
-    return { showingEdit, editingTask, card };
+    return {
+      showingEdit,
+      editingTask,
+      card,
+      darkMode,
+    };
   },
 };
 </script>
@@ -100,5 +108,10 @@ export default {
   justify-content: center;
   align-items: center;
   transition: border-color 400ms ease-out, background-color 400ms ease-out;
+
+  &--dark {
+    border-color: rgba($color: #ffffff, $alpha: 0.1);
+    background-color: #1f2022;
+  }
 }
 </style>

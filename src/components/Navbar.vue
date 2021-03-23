@@ -1,7 +1,7 @@
 <template>
   <nav :class="{ navbar: true, 'navbar--dark': darkMode }">
     <div class="navbar__heading">
-      <transition-group name="push">
+      <transition-group name="toggle-right">
         <button
           v-if="creatingTask"
           class="navbar__button navbar__button--close"
@@ -12,7 +12,7 @@
         <h1 v-else class="navbar__heading__logo navbar__heading__logo--left-3" key="3">Add Task</h1>
       </transition-group>
     </div>
-    <transition name="toggle">
+    <transition name="toggle-left">
       <button
         v-if="!creatingTask"
         class="navbar__button navbar__button--add"
@@ -153,27 +153,24 @@ export default {
   }
 }
 
-.toggle-enter-active,
-.toggle-leave-active {
+.toggle-left-enter-active,
+.toggle-left-leave-active {
   transition: transform 300ms ease, opacity 300ms ease;
 }
 
-.toggle-enter-from,
-.toggle-leave-to {
+.toggle-left-enter-from,
+.toggle-left-leave-to {
   opacity: 0;
   transform: translate(30px, -50%);
 }
-.push-enter-active,
-.push-leave-active {
+.toggle-right-enter-active,
+.toggle-right-leave-active {
   transition: opacity 300ms ease, transform 200ms ease;
   position: absolute;
 }
-.push-enter-from,
-.push-leave-to {
+.toggle-right-enter-from,
+.toggle-right-leave-to {
   opacity: 0;
   transform: translateX(-30px);
 }
-// .push-move {
-
-// }
 </style>

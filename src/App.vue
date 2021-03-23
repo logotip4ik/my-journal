@@ -2,30 +2,10 @@
   <div :class="{ main: true, 'main--dark': darkMode, 'main--lock-y': showingShare || showingEdit }">
     <Navbar />
     <TaskGrid />
+    <DarkModeButtons />
     <OverlayEdit />
     <OverlayShare />
     <OverlayCreateTask />
-    <div class="button-container">
-      <button
-        :class="{ main__button: true, 'main__button--dark': darkMode }"
-        @click="toggleDarkMode"
-      >
-        <transition name="fade">
-          <img
-            v-if="!darkMode"
-            src="@/assets/dark_mode-black-18dp.svg"
-            alt="dark mode icon"
-            class="main__button__icon"
-          />
-          <img
-            v-else
-            src="@/assets/light_mode-white-18dp.svg"
-            alt="light mode icon"
-            class="main__button__icon"
-          />
-        </transition>
-      </button>
-    </div>
   </div>
 </template>
 
@@ -39,6 +19,7 @@ import { v4 } from 'uuid';
 import useDB from './hooks/useDB';
 
 import Navbar from './components/Navbar.vue';
+import DarkModeButtons from './components/DarkModeButtons.vue';
 import TaskGrid from './components/TaskGrid.vue';
 import OverlayEdit from './components/Overlay-Edit.vue';
 import OverlayShare from './components/Overlay-Share.vue';
@@ -133,6 +114,7 @@ export default {
     provide('deleteTask', deleteTask);
     provide('shareTask', shareTask);
     provide('editTask', editTask);
+    provide('toggleDarkMode', toggleDarkMode);
 
     return {
       darkMode,
@@ -144,6 +126,7 @@ export default {
   components: {
     Navbar,
     TaskGrid,
+    DarkModeButtons,
     OverlayEdit,
     OverlayShare,
     OverlayCreateTask,
@@ -180,14 +163,10 @@ body {
     overflow-y: hidden;
   }
 
-  .button-container {
+  &__button {
     position: fixed;
     bottom: 3rem;
     right: 1.5rem;
-  }
-
-  &__button {
-    position: relative;
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -204,10 +183,10 @@ body {
     &__icon {
       width: 35px;
       height: 35px;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      // position: absolute;
+      // top: 50%;
+      // left: 50%;
+      // transform: translate(-50%, -50%);
     }
   }
 }
@@ -231,5 +210,16 @@ body {
 .fall-enter-from {
   opacity: 0;
   transform: scale(1.5);
+}
+
+.toggle-buttons-enter-active,
+.toggle-buttons-leave-active {
+  transition: transform 400ms ease-out, opacity 400ms ease-out;
+}
+
+.toggle-buttons-enter-from,
+.toggle-buttons-leave-to {
+  transform: translateX(30px);
+  opacity: 0;
 }
 </style>
