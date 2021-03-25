@@ -45,6 +45,17 @@ export default {
         .toISODate(),
     });
 
+    async function getAllTasks() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('shared_task')) {
+        const sharedTask = JSON.parse(decodeURI(atob(params.get('shared_task'))));
+        await db.homework.put({ ...sharedTask, id: v4() });
+        const url = window.location.href.split('?')[0];
+        window.history.pushState('', '', url);
+      }
+      tasks.value = await db.homework.toArray();
+    }
+
     function resetNewTask() {
       creatingTask.value = false;
       newTask.className = '';
@@ -87,20 +98,17 @@ export default {
       editingTask.value = task;
       showingEdit.value = true;
     }
-
-    async function checkForSharedTask() {
-      const params = new URLSearchParams(window.location.search);
-      if (params.has('shared_task')) {
-        const sharedTask = JSON.parse(decodeURI(atob(params.get('shared_task'))));
-        await db.homework.put({ ...sharedTask, id: v4() });
-        const url = window.location.href.split('?')[0];
-        window.history.pushState('', '', url);
-      }
-      tasks.value = await db.homework.toArray();
+    async function saveEditingTask() {
+      if (!editingTask.value.className || !editingTask.value.task) return;
+      await db.homework.put(
+        { ...editingTask.value, updatedDate: DateTime.local().toISO() },
+        editingTask.value.id,
+      );
+      resetEdit();
     }
 
     onMounted(() => {
-      checkForSharedTask();
+      getAllTasks();
     });
 
     provide('db', db);
@@ -119,6 +127,7 @@ export default {
     provide('deleteTask', deleteTask);
     provide('shareTask', shareTask);
     provide('editTask', editTask);
+    provide('saveEditingTask', saveEditingTask);
     provide('toggleDarkMode', toggleDarkMode);
 
     return {
@@ -188,22 +197,8 @@ body {
     &__icon {
       width: 35px;
       height: 35px;
-      // position: absolute;
-      // top: 50%;
-      // left: 50%;
-      // transform: translate(-50%, -50%);
     }
   }
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 400ms ease-out;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 
 .fall-enter-active,

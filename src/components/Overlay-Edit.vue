@@ -1,152 +1,104 @@
 <template>
-  <transition name="fade">
-    <div v-if="showingEdit" class="card-container">
-      <div :class="{ card: true, 'card--dark': darkMode }" ref="card">
-        <div class="input-wrapper">
-          <label>Class Name</label><input v-model="editingTask.className" type="text" />
-        </div>
-        <div class="input-wrapper">
-          <label>Task</label><input v-model="editingTask.task" type="text" />
-        </div>
-        <div class="input-wrapper">
-          <label>Finish Date</label><input v-model="editingTask.finishDate" type="text" />
-        </div>
-        <div class="buttons">
-          <button class="buttons__save">Save</button>
-          <button class="buttons__reset">Reset</button>
-        </div>
-      </div>
+  <OverlayCard :value="showingEdit" :onEsc="resetEdit">
+    <div class="input-wrapper">
+      <label>Class Name</label><input v-model="editingTask.className" type="text" />
     </div>
-  </transition>
+    <div class="input-wrapper">
+      <label>Task</label
+      ><textarea v-model="editingTask.task" @input="resizeTextarea" type="text" ref="taskInput" />
+    </div>
+    <div class="input-wrapper">
+      <label>Finish Date</label><input v-model="editingTask.finishDate" type="date" />
+    </div>
+    <div class="buttons">
+      <button class="buttons__save" @click="saveEditingTask">Save</button>
+      <button class="buttons__cancel" @click="resetEdit">Cancel</button>
+    </div>
+  </OverlayCard>
 </template>
 
 <script>
-import { inject, ref, watch } from 'vue';
-import Hammer from 'hammerjs';
-import gsap from 'gsap';
+import { inject, ref } from 'vue';
+
+import OverlayCard from './Overlay-Card.vue';
 
 export default {
   name: 'OverlayEdit',
   setup() {
     const card = ref(null);
+    const taskInput = ref(null);
 
     const darkMode = inject('darkMode');
     const showingEdit = inject('showingEdit');
     const editingTask = inject('editingTask');
     const resetEdit = inject('resetEdit');
+    const saveEditingTask = inject('saveEditingTask');
 
-    function checkForKey({ key }) {
-      if (key === 'Escape') resetEdit();
+    function resizeTextarea() {
+      taskInput.value.style.height = 'auto';
+      taskInput.value.style.height = `${taskInput.value.scrollHeight}px`;
     }
-
-    function slideItemToY(x) {
-      gsap.to(card.value, {
-        translateY: `${x}px`,
-        duration: 0.3,
-      });
-    }
-
-    function initHammer() {
-      const hammertime = new Hammer.Manager(card.value);
-      hammertime.add(new Hammer.Pan({ direction: Hammer.DIRECTION_VERTICAL, threshold: 0 }));
-
-      hammertime.on('panstart panmove', ({ deltaY }) => {
-        if (deltaY > 0) {
-          slideItemToY(deltaY);
-        } else if (deltaY < 0) {
-          slideItemToY(deltaY * 0.2);
-        }
-      });
-      hammertime.on('hammer.input', ({ isFinal, deltaY }) => {
-        if (isFinal) {
-          if (deltaY < 0) {
-            slideItemToY(0);
-          } else if (deltaY > 200) {
-            gsap.to(card.value, {
-              yPercent: 100,
-              duration: 0.3,
-              onComplete: resetEdit,
-            });
-          } else if (deltaY < 200 && deltaY > 0) {
-            slideItemToY(0);
-          }
-        }
-      });
-    }
-
-    watch(showingEdit, (value, oldValue) => {
-      if (value && !oldValue) {
-        window.addEventListener('keyup', checkForKey);
-        setTimeout(initHammer, 400);
-      } else if (!value && oldValue) {
-        window.removeEventListener('keyup', checkForKey);
-      }
-    });
 
     return {
       showingEdit,
       editingTask,
-      card,
       darkMode,
+      resetEdit,
+      saveEditingTask,
+      resizeTextarea,
+      taskInput,
+      card,
     };
+  },
+  components: {
+    OverlayCard,
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.card-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.5rem;
-  background-color: rgba($color: #000000, $alpha: 0.4);
-  z-index: 9999;
-}
-
-.card {
-  border-radius: 0.25rem;
-  border: 1px solid transparent;
-  background-color: white;
-  padding: 0.5rem;
-  max-height: 95vh;
-  max-width: 600px;
-  // display: flex;
-  // flex-direction: column;
-  // justify-content: center;
-  // align-items: center;
-  transition: border-color 400ms ease-out, background-color 400ms ease-out;
-
-  &--dark {
-    border-color: rgba($color: #ffffff, $alpha: 0.1);
-    background-color: #1f2022;
-
-    .input-wrapper {
-      label,
+.card--dark {
+  & > .input-wrapper {
+    label,
+    input,
+    textarea {
+      border-bottom-color: rgb(212, 212, 212);
+      color: rgb(212, 212, 212);
+    }
+    &:hover {
+      label {
+        color: white;
+      }
       input,
       textarea {
-        border-bottom-color: rgb(212, 212, 212);
-        color: rgb(212, 212, 212);
+        border-bottom-color: white;
       }
+    }
+    &::after {
+      background-color: white;
+    }
+  }
+  & .buttons {
+    &__save {
+      background-color: darken($color: white, $amount: 20);
+      color: black;
+
       &:hover {
-        label {
-          color: white;
-        }
-        input,
-        textarea {
-          border-bottom-color: white;
-        }
-      }
-      &::after {
         background-color: white;
+        color: black;
+      }
+    }
+    &__cancel {
+      background-color: transparent;
+      color: white;
+
+      &:hover {
+        background-color: lighten($color: #1f2022, $amount: 10);
       }
     }
   }
 }
+
 .input-wrapper {
   width: 100%;
   margin-bottom: 1.5rem;
@@ -188,6 +140,8 @@ export default {
     font-size: 1.1rem;
     padding: 0.1rem;
     width: 100%;
+  }
+  textarea {
     resize: vertical;
   }
   &::after {
@@ -200,6 +154,45 @@ export default {
     background-color: black;
     transform: scale(0);
     transition: transform 300ms ease-out;
+  }
+}
+
+.buttons {
+  align-self: flex-end;
+  padding: 0.1rem 0.5rem;
+
+  * {
+    appearance: none;
+    border: 1px solid #999;
+    background-color: transparent;
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    box-shadow: 0 0 10px 0 rgba($color: #000000, $alpha: 0.2),
+      inset 0 0 10px 0 rgba($color: #000000, $alpha: 0.15);
+    font: inherit;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 0 0.25rem;
+    transition: background-color 200ms ease-out, color 200ms ease-out;
+    cursor: pointer;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  &__save {
+    background-color: lighten($color: #1f2022, $amount: 10);
+    color: white;
+
+    &:hover {
+      background-color: #1f2022;
+      color: white;
+    }
+  }
+  &__cancel:hover {
+    background-color: darken($color: white, $amount: 10);
   }
 }
 </style>

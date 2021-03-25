@@ -1,23 +1,24 @@
 <template>
-  <transition name="fall">
+  <OverlayCard :value="showingShare" :onEsc="resetShare">
+    <img :src="urlToQrCode" alt="" />
+    OR
+    <button :class="{ card__button: true, 'card__button--dark': darkMode }" @click="copyURL">
+      Copy URL
+    </button>
+  </OverlayCard>
+  <!-- <transition name="fall">
     <div class="card-container" v-if="showingShare">
       <div :class="{ card: true, 'card--dark': darkMode }" ref="card">
-        <img :src="urlToQrCode" alt="" />
-        OR
-        <button :class="{ card__button: true, 'card__button--dark': darkMode }" @click="copyURL">
-          Copy URL
-        </button>
       </div>
     </div>
-  </transition>
+  </transition> -->
 </template>
 
 <script>
-// eslint-disable-next-line
-import { computed, inject, ref, watch } from 'vue';
-import Hammer from 'hammerjs';
-import gsap from 'gsap';
+import { computed, inject, ref } from 'vue';
 import qrcode from 'qrcode-generator';
+
+import OverlayCard from './Overlay-Card.vue';
 
 export default {
   name: 'TaskShareOverlay',
@@ -59,51 +60,6 @@ export default {
       }
       resetShare();
     }
-    function checkForKey(ev) {
-      if (ev.key === 'Escape') resetShare();
-    }
-    function slideItemToY(x) {
-      gsap.to(card.value, {
-        translateY: `${x}px`,
-        duration: 0.3,
-      });
-    }
-    function initHammer() {
-      const hammertime = new Hammer.Manager(card.value);
-      hammertime.add(new Hammer.Pan({ direction: Hammer.DIRECTION_VERTICAL, threshold: 0 }));
-
-      hammertime.on('panstart panmove', ({ deltaY }) => {
-        if (deltaY > 0) {
-          slideItemToY(deltaY);
-        } else if (deltaY < 0) {
-          slideItemToY(deltaY * 0.2);
-        }
-      });
-      hammertime.on('hammer.input', ({ isFinal, deltaY }) => {
-        if (isFinal) {
-          if (deltaY < 0) {
-            slideItemToY(0);
-          } else if (deltaY > 200) {
-            gsap.to(card.value, {
-              yPercent: 100,
-              duration: 0.3,
-              onComplete: resetShare,
-            });
-          } else if (deltaY < 200 && deltaY > 0) {
-            slideItemToY(0);
-          }
-        }
-      });
-    }
-
-    watch(showingShare, (value, oldValue) => {
-      if (value && !oldValue) {
-        window.addEventListener('keyup', checkForKey);
-        setTimeout(initHammer, 400);
-      } else if (!value && oldValue) {
-        window.removeEventListener('keyup', checkForKey);
-      }
-    });
 
     return {
       card,
@@ -115,6 +71,9 @@ export default {
       qrcode,
       urlToQrCode,
     };
+  },
+  components: {
+    OverlayCard,
   },
 };
 </script>
