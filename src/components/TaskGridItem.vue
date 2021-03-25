@@ -113,6 +113,9 @@ export default {
     h5 {
       font-size: 0.4rem;
     }
+    ul {
+      padding-left: 1.25rem;
+    }
   }
 
   &__button {
