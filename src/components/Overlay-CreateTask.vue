@@ -32,10 +32,11 @@
             @keypress.enter.prevent="addNewTask"
           />
         </div>
-        <!-- <div class="input-wrapper">
+        <div class="input-wrapper">
           <label>Photo</label>
-          <FileInput v-model="newTask.photo" is-image />
-        </div> -->
+          <input type="file" accept="image/*" @input="setImage" />
+          <!-- <FileInput v-model="newTask.photo" is-image /> -->
+        </div>
       </div>
     </div>
   </transition>
@@ -43,16 +44,16 @@
 
 <script>
 import { inject, ref, watch } from 'vue';
-// import FileInput from 'vue3-simple-file-input';
 
 export default {
   name: 'TaskOverlay',
   setup() {
     const classNameInput = ref(null);
     const taskInput = ref(null);
-    // const photoInput = ref(null);
+    const photoInput = ref(null);
 
     const darkMode = inject('darkMode');
+    const setImage = inject('setImage');
     const creatingTask = inject('creatingTask');
     const newTask = inject('newTask');
     const addNewTask = inject('addNewTask');
@@ -81,9 +82,10 @@ export default {
     return {
       classNameInput,
       taskInput,
-      // photoInput,
+      photoInput,
       creatingTask,
       darkMode,
+      setImage,
       newTask,
       addNewTask,
       resizeTextarea,
@@ -108,9 +110,6 @@ export default {
   //         this.finishDate = DateTime.local().plus({ days: 1 }).toISODate();
   //         this.$emit('close', data);
   //       };
-  components: {
-    // FileInput,
-  },
 };
 </script>
 

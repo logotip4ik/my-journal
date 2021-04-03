@@ -9,12 +9,13 @@
           <TaskGridItem
             v-for="task in sortedTasks[date]"
             :key="task.id"
+            :task="task.task"
+            :photo="task.photo"
             @self-delete="deleteTask(task.id)"
             @self-share="shareTask(task)"
             @self-edit="editTask(task)"
           >
-            <template #default>{{ task.className }}</template>
-            <template #task>{{ formatTask(task.task) }}</template>
+            {{ task.className }}
           </TaskGridItem>
         </transition-group>
       </div>
@@ -25,8 +26,6 @@
 <script>
 import { computed, inject } from 'vue';
 import { DateTime } from 'luxon';
-import DOMpurify from 'dompurify';
-import marked from 'marked';
 
 import TaskGridItem from './TaskGridItem.vue';
 
@@ -61,10 +60,6 @@ export default {
     function formatDate(date) {
       return DateTime.fromISO(date).toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY);
     }
-    function formatTask(task) {
-      const t = DOMpurify.sanitize(task);
-      return marked(t, { headerIds: false });
-    }
 
     return {
       tasks,
@@ -72,7 +67,6 @@ export default {
       sortedTasks,
       darkMode,
       formatDate,
-      formatTask,
       shareTask,
       deleteTask,
       editTask,

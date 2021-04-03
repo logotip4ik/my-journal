@@ -73,7 +73,13 @@ export default {
       showingEdit.value = false;
       editingTask.value = null;
     }
-
+    function setImage({ target }) {
+      const reader = new FileReader();
+      reader.addEventListener('load', () => {
+        newTask.photo = reader.result;
+      });
+      reader.readAsDataURL(target.files[0]);
+    }
     async function addNewTask() {
       if (!newTask.className || !newTask.task || !newTask.finishDate) return;
       const task = {
@@ -82,9 +88,10 @@ export default {
         createdDate: DateTime.local().toISO(),
         updatedDate: DateTime.local().toISO(),
       };
+
       await db.homework.put(task);
-      resetNewTask();
       tasks.value.push(task);
+      resetNewTask();
     }
 
     function shareTask(task) {
@@ -115,6 +122,7 @@ export default {
     provide('db', db);
     provide('tasks', tasks);
     provide('darkMode', darkMode);
+    provide('setImage', setImage);
     provide('creatingTask', creatingTask);
     provide('showingShare', showingShare);
     provide('showingEdit', showingEdit);

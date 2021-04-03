@@ -1,11 +1,12 @@
 <template>
   <li class="item-container">
     <button class="item__button item__button--share" @click="$emit('self-share'), slideItemToX(0)">
-      <img src="@/assets/reply-white-18dp.svg" alt="" />
+      <img src="@/assets/reply-white-18dp.svg" alt="reply image" />
     </button>
     <div :class="{ item: true, 'item--dark': darkMode }" ref="item">
       <h2 class="item__heading"><slot></slot></h2>
-      <p v-html="$slots.task()[0].children"></p>
+      <p v-html="formatTask(task)"></p>
+      <img v-if="photo" :src="photo" />
     </div>
     <button class="item__button item__button--delete" @click="$emit('self-delete')"></button>
   </li>
@@ -15,13 +16,20 @@
 import { inject, onMounted, ref } from 'vue';
 import Hammer from 'hammerjs';
 import gsap from 'gsap';
+import DOMpurify from 'dompurify';
+import marked from 'marked';
 
 export default {
   name: 'TaskGridItem',
   setup(_, { emit }) {
     const item = ref(null);
+    const image = ref(null);
     const darkMode = inject('darkMode');
 
+    function formatTask(task) {
+      const t = DOMpurify.sanitize(task);
+      return marked(t, { headerIds: false });
+    }
     function slideItemToX(x) {
       gsap.to(item.value, {
         translateX: `${x}px`,
@@ -58,13 +66,27 @@ export default {
       });
     }
 
-    onMounted(initHammer);
+    onMounted(() => {
+      initHammer();
+    });
 
     return {
       item,
+      image,
       darkMode,
+      formatTask,
       slideItemToX,
     };
+  },
+  props: {
+    task: {
+      type: String,
+      required: true,
+    },
+    photo: {
+      type: String,
+      required: false,
+    },
   },
   emits: ['self-delete', 'self-share', 'self-edit'],
 };
