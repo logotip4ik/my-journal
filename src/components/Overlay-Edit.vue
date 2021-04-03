@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { inject, ref } from 'vue';
+import { inject, ref, watch } from 'vue';
 
 import OverlayCard from './Overlay-Card.vue';
 
@@ -38,6 +38,10 @@ export default {
       taskInput.value.style.height = 'auto';
       taskInput.value.style.height = `${taskInput.value.scrollHeight}px`;
     }
+
+    watch(showingEdit, (val) => {
+      if (val) setTimeout(resizeTextarea, 400);
+    });
 
     return {
       showingEdit,

@@ -40,6 +40,7 @@ export default {
     const newTask = reactive({
       className: '',
       task: '',
+      photo: null,
       finishDate: DateTime.local()
         .plus({ days: 1 })
         .toISODate(),

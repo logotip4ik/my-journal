@@ -20,8 +20,6 @@ export default {
   name: 'TaskGridItem',
   setup(_, { emit }) {
     const item = ref(null);
-    let hammertime;
-
     const darkMode = inject('darkMode');
 
     function slideItemToX(x) {
@@ -30,9 +28,8 @@ export default {
         duration: 0.3,
       });
     }
-
-    onMounted(() => {
-      hammertime = new Hammer.Manager(item.value);
+    function initHammer() {
+      const hammertime = new Hammer.Manager(item.value);
 
       hammertime.add(new Hammer.Tap({ event: 'doubletap', taps: 2 }));
       hammertime.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 0 }));
@@ -59,7 +56,9 @@ export default {
           }
         }
       });
-    });
+    }
+
+    onMounted(initHammer);
 
     return {
       item,
