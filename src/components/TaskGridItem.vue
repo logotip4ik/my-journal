@@ -5,8 +5,10 @@
     </button>
     <div :class="{ item: true, 'item--dark': darkMode }" ref="item">
       <h2 class="item__heading"><slot></slot></h2>
-      <p v-html="formatTask(task)"></p>
-      <img v-if="photo" :src="photo" />
+      <div class="item__content">
+        <p v-html="formatTask(task)"></p>
+        <img v-if="photo" :src="photo" />
+      </div>
     </div>
     <button class="item__button item__button--delete" @click="$emit('self-delete')"></button>
   </li>
@@ -115,25 +117,36 @@ export default {
     margin-bottom: 0.5rem;
   }
 
-  p {
-    padding: 0 0.5rem;
-    h1 {
-      font-size: 1.2rem;
+  &__content {
+    display: grid;
+    grid-template-columns: 70% auto;
+
+    img {
+      display: block;
+      width: 90%;
+      height: auto;
     }
-    h2 {
-      font-size: 1rem;
-    }
-    h3 {
-      font-size: 0.8rem;
-    }
-    h4 {
-      font-size: 0.6rem;
-    }
-    h5 {
-      font-size: 0.4rem;
-    }
-    ul {
-      padding-left: 1.25rem;
+
+    p {
+      padding: 0 0.5rem;
+      h1 {
+        font-size: 1.2rem;
+      }
+      h2 {
+        font-size: 1rem;
+      }
+      h3 {
+        font-size: 0.8rem;
+      }
+      h4 {
+        font-size: 0.6rem;
+      }
+      h5 {
+        font-size: 0.4rem;
+      }
+      ul {
+        padding-left: 1.25rem;
+      }
     }
   }
 

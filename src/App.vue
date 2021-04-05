@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ main: true, 'main--dark': darkMode, 'main--lock-y': showingShare || showingEdit }">
+  <div :class="{ main: true, 'main--dark': darkMode }">
     <Navbar />
     <TaskGrid />
     <DarkModeButtons />
@@ -11,7 +11,7 @@
 
 <script>
 // eslint-disable-next-line
-import { onMounted, provide, reactive, ref } from 'vue';
+import { onMounted, provide, reactive, ref, watch } from 'vue';
 import { useDark, useToggle } from '@vueuse/core';
 import { DateTime } from 'luxon';
 import { v4 } from 'uuid';
@@ -63,6 +63,8 @@ export default {
       creatingTask.value = false;
       newTask.className = '';
       newTask.task = '';
+      newTask.photo = null;
+      newTask.photoName = 'Upload image';
       newTask.finishDate = DateTime.local()
         .plus({ days: 1 })
         .toISODate();
@@ -123,6 +125,15 @@ export default {
       resetEdit();
     }
 
+    watch([creatingTask, showingShare, showingEdit], (values) => {
+      for (let i = 0; i < values.length; i += 1) {
+        if (values[i]) {
+          document.body.classList.add('lock-scroll');
+          break;
+        } else document.body.classList.remove('lock-scroll');
+      }
+    });
+
     onMounted(() => {
       getAllTasks();
     });
@@ -149,9 +160,6 @@ export default {
 
     return {
       darkMode,
-      toggleDarkMode,
-      showingShare,
-      showingEdit,
     };
   },
   components: {
@@ -190,32 +198,10 @@ body {
     color: white;
     background-color: #1f2022;
   }
-  &--lock-y {
-    overflow-y: hidden;
-  }
+}
 
-  &__button {
-    position: fixed;
-    bottom: 3rem;
-    right: 1.5rem;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    border: 1px solid #999;
-    background-color: white;
-    box-shadow: 0 0 10px 0 rgba($color: #000000, $alpha: 0.2),
-      inset 0 0 5px 0 rgba($color: #000000, $alpha: 0.1);
-    transition: background-color 400ms ease-out;
-
-    &--dark {
-      background-color: #1f2022;
-    }
-
-    &__icon {
-      width: 35px;
-      height: 35px;
-    }
-  }
+.lock-scroll {
+  overflow: hidden;
 }
 
 .fall-enter-active,

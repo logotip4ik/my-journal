@@ -131,9 +131,10 @@ export default {
     .input-wrapper {
       label,
       input,
-      textarea {
-        border-bottom-color: rgb(212, 212, 212);
-        color: rgb(212, 212, 212);
+      textarea,
+      button {
+        border-bottom-color: rgb(212, 212, 212) !important;
+        color: rgb(212, 212, 212) !important;
       }
       &:hover {
         label {

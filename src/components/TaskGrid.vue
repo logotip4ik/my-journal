@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <transition-group name="list">
+    <transition-group name="list" appear>
       <div v-for="date in taskDates" :key="date" class="tasks">
         <h2 :key="date" :class="{ tasks__date: true, 'tasks__date--dark': darkMode }">
           {{ formatDate(date) }}
