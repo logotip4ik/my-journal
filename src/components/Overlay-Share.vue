@@ -6,12 +6,6 @@
       Copy URL
     </button>
   </OverlayCard>
-  <!-- <transition name="fall">
-    <div class="card-container" v-if="showingShare">
-      <div :class="{ card: true, 'card--dark': darkMode }" ref="card">
-      </div>
-    </div>
-  </transition> -->
 </template>
 
 <script>

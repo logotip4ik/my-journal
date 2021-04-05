@@ -15,6 +15,7 @@ import { onMounted, provide, reactive, ref } from 'vue';
 import { useDark, useToggle } from '@vueuse/core';
 import { DateTime } from 'luxon';
 import { v4 } from 'uuid';
+import filesize from 'filesize.js';
 
 import useDB from './hooks/useDB';
 
@@ -41,6 +42,7 @@ export default {
       className: '',
       task: '',
       photo: null,
+      photoName: 'Upload image',
       finishDate: DateTime.local()
         .plus({ days: 1 })
         .toISODate(),
@@ -74,11 +76,17 @@ export default {
       editingTask.value = null;
     }
     function setImage({ target }) {
-      const reader = new FileReader();
-      reader.addEventListener('load', () => {
-        newTask.photo = reader.result;
-      });
-      reader.readAsDataURL(target.files[0]);
+      if (target) {
+        newTask.photoName = `${target.files[0].name} ${filesize(target.files[0].size)}`;
+        const reader = new FileReader();
+        reader.addEventListener('load', () => {
+          newTask.photo = reader.result;
+        });
+        reader.readAsDataURL(target.files[0]);
+      } else {
+        newTask.photo = null;
+        newTask.photoName = 'Upload image';
+      }
     }
     async function addNewTask() {
       if (!newTask.className || !newTask.task || !newTask.finishDate) return;

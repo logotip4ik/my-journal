@@ -34,8 +34,25 @@
         </div>
         <div class="input-wrapper">
           <label>Photo</label>
-          <input type="file" accept="image/*" @input="setImage" />
-          <!-- <FileInput v-model="newTask.photo" is-image /> -->
+          <div class="file-input">
+            <label class="file-input__button">{{ newTask.photoName }}</label>
+            <input
+              class="file-input__input"
+              type="file"
+              accept="image/*"
+              @input="setImage"
+              ref="image"
+            />
+            <transition name="fade">
+              <button
+                v-if="newTask.photoName !== 'Upload image'"
+                class="file-input__clear"
+                @click="setImage({ target: null })"
+              >
+                &times;
+              </button>
+            </transition>
+          </div>
         </div>
       </div>
     </div>
@@ -91,25 +108,6 @@ export default {
       resizeTextarea,
     };
   },
-  //     if (this.photo) {
-  //       const reader = new FileReader();
-  //       reader.readAsBinaryString(this.photo);
-  //       reader.onload = async (e) => {
-  //         const data = {
-  //           id: v4(),
-  //           task: this.task,
-  //           photo: e.target.result,
-  //           className: this.className,
-  //           finishDate: DateTime.fromISO(this.finishDate).toISO(),
-  //           createdDate: DateTime.local().toISO(),
-  //         };
-  //         await this.db.add('homework', data);
-  //         this.className = '';
-  //         this.task = '';
-  //         this.photo = null;
-  //         this.finishDate = DateTime.local().plus({ days: 1 }).toISODate();
-  //         this.$emit('close', data);
-  //       };
 };
 </script>
 
@@ -184,13 +182,13 @@ export default {
       transform: scale(1);
     }
   }
-  label {
+  label:not(.file-input__button) {
     display: block;
     font-size: 1.1rem;
     color: #333;
     transition: color 200ms ease-out;
   }
-  input,
+  input:not(.file-input),
   textarea {
     appearance: none;
     background-color: transparent;
@@ -207,6 +205,54 @@ export default {
   }
   textarea {
     resize: vertical;
+  }
+  .file-input {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    height: 2.5rem;
+    width: 100%;
+
+    &__button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      z-index: 5;
+      height: 2.5rem;
+      padding: 0.5rem 0.1rem;
+      font: inherit;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      color: #333;
+      background-color: transparent;
+      border: none;
+      border-bottom: 1px solid #333;
+      border-radius: 0;
+      user-select: none;
+      pointer-events: none;
+    }
+    &__input {
+      width: 100%;
+      margin: 0;
+      filter: alpha(opacity=0);
+      opacity: 0;
+      height: 100%;
+    }
+    &__clear {
+      position: absolute;
+      right: 0.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      appearance: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      border: 1px solid #999;
+      box-shadow: 0 0 10px 0 rgba($color: #000000, $alpha: 0.2);
+      background-color: transparent;
+      text-align: center;
+    }
   }
   &::after {
     content: '';
@@ -229,5 +275,13 @@ export default {
 .slide-up-enter-from,
 .slide-up-leave-to {
   transform: translateY(100%);
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 300ms ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

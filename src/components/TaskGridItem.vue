@@ -23,7 +23,6 @@ export default {
   name: 'TaskGridItem',
   setup(_, { emit }) {
     const item = ref(null);
-    const image = ref(null);
     const darkMode = inject('darkMode');
 
     function formatTask(task) {
@@ -72,7 +71,6 @@ export default {
 
     return {
       item,
-      image,
       darkMode,
       formatTask,
       slideItemToX,
