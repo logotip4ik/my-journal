@@ -7,32 +7,42 @@
       <h2 class="item__heading"><slot></slot></h2>
       <div class="item__content">
         <p v-html="formatTask(task)"></p>
-        <img v-if="photo" :src="photo" />
+        <img v-if="photo" :src="image" @click="showingImage = !showingImage" />
       </div>
     </div>
     <button class="item__button item__button--delete" @click="$emit('self-delete')"></button>
+    <OverlayCard :value="showingImage" :on-esc="() => (showingImage = !showingImage)" image>
+      <img :src="image" />
+    </OverlayCard>
   </li>
 </template>
 
 <script>
-import { inject, onMounted, ref } from 'vue';
+// eslint-disable-next-line
+import { inject, onMounted, ref, watch } from 'vue';
 import Hammer from 'hammerjs';
 import gsap from 'gsap';
 import DOMpurify from 'dompurify';
 import marked from 'marked';
 
+import OverlayCard from './Overlay-Card.vue';
+
 export default {
   name: 'TaskGridItem',
-  setup(_, { emit }) {
+  setup(props, { emit }) {
     const item = ref(null);
+    const image = ref('');
+    const showingImage = ref(false);
     const darkMode = inject('darkMode');
 
     function formatTask(task) {
       const t = DOMpurify.sanitize(task);
       return marked(t, { headerIds: false });
     }
-    function slideItemToX(x) {
+    function slideItemToX(x, up = true) {
       gsap.to(item.value, {
+        scale: up ? 1.05 : 1,
+        boxShadow: `0 ${up ? 5 : 0}px ${up ? 15 : 10}px 0 rgba(0, 0, 0, 0.${up ? 3 : 2})`,
         translateX: `${x}px`,
         duration: 0.3,
       });
@@ -61,18 +71,31 @@ export default {
           } else if (deltaX > 50) {
             slideItemToX(100);
           } else if (deltaX < 50 && deltaX > -50) {
-            slideItemToX(0);
+            slideItemToX(0, false);
           }
         }
       });
     }
+    function convertPhoto() {
+      if (!props.photo) return;
+      const typedArray = new Uint8Array(props.photo);
+      const blob = new Blob([typedArray], { type: 'image/jpeg' });
+      image.value = window.URL.createObjectURL(blob);
+    }
+
+    watch(props, ({ photo }) => {
+      if (photo) convertPhoto();
+    });
 
     onMounted(() => {
       initHammer();
+      convertPhoto();
     });
 
     return {
       item,
+      image,
+      showingImage,
       darkMode,
       formatTask,
       slideItemToX,
@@ -84,11 +107,12 @@ export default {
       required: true,
     },
     photo: {
-      type: String,
+      type: ArrayBuffer,
       required: false,
     },
   },
   emits: ['self-delete', 'self-share', 'self-edit'],
+  components: { OverlayCard },
 };
 </script>
 

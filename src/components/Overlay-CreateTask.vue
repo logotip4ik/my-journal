@@ -39,7 +39,7 @@
             <input
               class="file-input__input"
               type="file"
-              accept="image/*"
+              accept="image/png, image/jpeg"
               @input="setImage"
               ref="image"
             />

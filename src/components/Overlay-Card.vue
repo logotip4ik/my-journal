@@ -1,7 +1,7 @@
 <template>
   <transition name="fall">
     <div v-if="value" class="card-container">
-      <div :class="{ card: true, 'card--dark': darkMode }" ref="card">
+      <div :class="{ card: true, 'card--dark': darkMode, 'card--image': image }" ref="card">
         <slot></slot>
       </div>
     </div>
@@ -20,7 +20,7 @@ export default {
     const darkMode = inject('darkMode');
 
     function checkForKey({ key }) {
-      if (key === 'Escape') props.onEsc();
+      if (key === 'Escape') props.onEsc.call();
     }
 
     function slideItemToY(x) {
@@ -78,6 +78,11 @@ export default {
       required: true,
       default: false,
     },
+    image: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     onEsc: {
       type: Function,
       required: true,
@@ -99,7 +104,7 @@ export default {
   align-items: center;
   padding: 0.5rem;
   background-color: rgba($color: #000000, $alpha: 0.4);
-  z-index: 9999;
+  z-index: 999999;
 }
 
 .card {
@@ -120,6 +125,17 @@ export default {
   &--dark {
     border-color: rgba($color: #ffffff, $alpha: 0.1);
     background-color: #1f2022;
+  }
+  &--image {
+    max-width: 800px;
+    max-height: 95%;
+    width: auto;
+    margin-top: 56px;
+    img {
+      object-fit: contain;
+      width: 100%;
+      height: 100%;
+    }
   }
 }
 </style>

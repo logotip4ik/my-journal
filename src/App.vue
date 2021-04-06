@@ -84,10 +84,23 @@ export default {
         reader.addEventListener('load', () => {
           newTask.photo = reader.result;
         });
-        reader.readAsDataURL(target.files[0]);
+        reader.readAsArrayBuffer(target.files[0]);
       } else {
         newTask.photo = null;
         newTask.photoName = 'Upload image';
+      }
+    }
+    function setImageEditing({ target }) {
+      if (target) {
+        editingTask.value.photoName = `${target.files[0].name} ${filesize(target.files[0].size)}`;
+        const reader = new FileReader();
+        reader.addEventListener('load', () => {
+          editingTask.value.photo = reader.result;
+        });
+        reader.readAsArrayBuffer(target.files[0]);
+      } else {
+        editingTask.value.photo = null;
+        editingTask.value.photoName = 'Upload image';
       }
     }
     async function addNewTask() {
@@ -142,6 +155,7 @@ export default {
     provide('tasks', tasks);
     provide('darkMode', darkMode);
     provide('setImage', setImage);
+    provide('setImageEditing', setImageEditing);
     provide('creatingTask', creatingTask);
     provide('showingShare', showingShare);
     provide('showingEdit', showingEdit);
