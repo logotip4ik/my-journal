@@ -34,7 +34,9 @@
     </div>
     <div class="buttons">
       <transition name="fade">
-        <button v-if="editingTask.photo" class="buttons__download">Download Image</button>
+        <button v-if="editingTask.photo" class="buttons__download" @click="downloadImage">
+          Download Image
+        </button>
       </transition>
       <button class="buttons__save" @click="saveEditingTask">Save</button>
       <button class="buttons__cancel" @click="resetEdit">Cancel</button>
@@ -64,6 +66,22 @@ export default {
       taskInput.value.style.height = 'auto';
       taskInput.value.style.height = `${taskInput.value.scrollHeight}px`;
     }
+    function convertImageToHref() {
+      const typedArray = new Uint8Array(editingTask.value.photo);
+      const blob = new Blob([typedArray], { type: 'image/jpeg' });
+      return window.URL.createObjectURL(blob);
+    }
+    function downloadImage() {
+      const link = document.createElement('a');
+      link.href = convertImageToHref();
+      console.log(link.href);
+      link.download = true;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      resetEdit();
+    }
 
     watch(showingEdit, (val) => {
       if (val) setTimeout(resizeTextarea, 400);
@@ -75,6 +93,7 @@ export default {
       darkMode,
       resetEdit,
       setImageEditing,
+      downloadImage,
       saveEditingTask,
       resizeTextarea,
       taskInput,
