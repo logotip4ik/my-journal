@@ -50,13 +50,14 @@ export default {
     function initHammer() {
       const hammertime = new Hammer.Manager(item.value);
 
-      hammertime.add(new Hammer.Tap({ event: 'doubletap', taps: 2 }));
+      hammertime.add(new Hammer.Press({ event: 'longpress', time: 300 }));
       hammertime.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 0 }));
 
-      hammertime.on('doubletap', () => {
+      hammertime.on('longpress', () => {
         emit('self-edit');
       });
-      hammertime.on('panstart panmove', ({ deltaX }) => {
+      hammertime.on('panstart panmove', ({ deltaX, velocityX }) => {
+        console.log(velocityX);
         if (deltaX > -100 && deltaX < 100) {
           slideItemToX(deltaX);
         } else {
