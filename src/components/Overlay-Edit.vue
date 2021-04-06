@@ -74,7 +74,6 @@ export default {
     function downloadImage() {
       const link = document.createElement('a');
       link.href = convertImageToHref();
-      console.log(link.href);
       link.download = true;
       link.style.display = 'none';
       document.body.appendChild(link);
