@@ -41,10 +41,11 @@ export default {
     }
     function slideItemToX(x, up = true) {
       gsap.to(item.value, {
-        scale: up ? 1.05 : 1,
+        scale: up ? 1.03 : 1,
         boxShadow: `0 ${up ? 5 : 0}px ${up ? 15 : 10}px 0 rgba(0, 0, 0, 0.${up ? 3 : 2})`,
         translateX: `${x}px`,
-        duration: 0.3,
+        duration: 0.5,
+        ease: 'back.out',
       });
     }
     function initHammer() {
@@ -56,8 +57,7 @@ export default {
       hammertime.on('longpress', () => {
         emit('self-edit');
       });
-      hammertime.on('panstart panmove', ({ deltaX, velocityX }) => {
-        console.log(velocityX);
+      hammertime.on('panstart panmove', ({ deltaX }) => {
         if (deltaX > -100 && deltaX < 100) {
           slideItemToX(deltaX);
         } else {
@@ -65,13 +65,14 @@ export default {
           slideItemToX(overDeltaX);
         }
       });
-      hammertime.on('hammer.input', ({ isFinal, deltaX }) => {
+      hammertime.on('hammer.input', ({ isFinal, deltaX, velocityX }) => {
         if (isFinal) {
-          if (deltaX < -50) {
+          const delta = deltaX * Math.abs(velocityX);
+          if (delta < -50) {
             slideItemToX(-100);
-          } else if (deltaX > 50) {
+          } else if (delta > 50) {
             slideItemToX(100);
-          } else if (deltaX < 50 && deltaX > -50) {
+          } else if (delta < 50 && delta > -50) {
             slideItemToX(0, false);
           }
         }
