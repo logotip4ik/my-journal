@@ -68,7 +68,6 @@ export default {
       hammertime.on('hammer.input', ({ isFinal, deltaX, velocityX }) => {
         if (isFinal) {
           const delta = deltaX + deltaX * Math.abs(velocityX);
-          console.log(delta);
           if (delta < -50) {
             slideItemToX(-100);
           } else if (delta > 50) {
@@ -168,7 +167,8 @@ export default {
       h5 {
         font-size: 0.4rem;
       }
-      ul, ol {
+      ul,
+      ol {
         padding-left: 1.25rem;
       }
     }
