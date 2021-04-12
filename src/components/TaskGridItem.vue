@@ -67,7 +67,8 @@ export default {
       });
       hammertime.on('hammer.input', ({ isFinal, deltaX, velocityX }) => {
         if (isFinal) {
-          const delta = deltaX * Math.abs(velocityX);
+          const delta = deltaX + deltaX * Math.abs(velocityX);
+          console.log(delta);
           if (delta < -50) {
             slideItemToX(-100);
           } else if (delta > 50) {
@@ -134,9 +135,6 @@ export default {
   &--dark {
     border-color: rgba($color: #ffffff, $alpha: 0.1);
     background-color: #1f2022;
-  }
-  &--show-right {
-    transform: translateX(-100px);
   }
 
   &__heading {
