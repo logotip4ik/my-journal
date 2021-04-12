@@ -168,7 +168,7 @@ export default {
       h5 {
         font-size: 0.4rem;
       }
-      ul {
+      ul, ol {
         padding-left: 1.25rem;
       }
     }
