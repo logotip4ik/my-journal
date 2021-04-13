@@ -58,24 +58,20 @@ export default {
         emit('self-edit');
       });
       hammertime.on('panstart panmove', ({ deltaX }) => {
-        if (deltaX > -100 && deltaX < 100) {
-          slideItemToX(deltaX);
-        } else {
+        if (deltaX > -100 && deltaX < 100) slideItemToX(deltaX);
+        else {
           const overDeltaX = (deltaX < 0 ? -100 : 100) + deltaX * 0.075;
           slideItemToX(overDeltaX);
         }
       });
       hammertime.on('hammer.input', ({ isFinal, deltaX, velocityX }) => {
-        if (isFinal) {
-          const delta = deltaX + deltaX * Math.abs(velocityX);
-          if (delta < -50) {
-            slideItemToX(-100);
-          } else if (delta > 50) {
-            slideItemToX(100);
-          } else if (delta < 50 && delta > -50) {
-            slideItemToX(0, false);
-          }
-        }
+        if (!isFinal) return;
+
+        const delta = deltaX + deltaX * Math.abs(velocityX);
+
+        if (delta < -50) slideItemToX(-100);
+        else if (delta > 50) slideItemToX(100);
+        else if (delta < 50 && delta > -50) slideItemToX(0, false);
       });
     }
     function convertPhoto() {
