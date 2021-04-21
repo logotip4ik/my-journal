@@ -228,15 +228,4 @@ body {
   opacity: 0;
   transform: scale(1.5);
 }
-
-.toggle-buttons-enter-active,
-.toggle-buttons-leave-active {
-  transition: transform 400ms ease-out, opacity 400ms ease-out;
-}
-
-.toggle-buttons-enter-from,
-.toggle-buttons-leave-to {
-  transform: translateX(30px);
-  opacity: 0;
-}
 </style>

@@ -53,4 +53,14 @@ export default {
     height: 35px;
   }
 }
+
+.toggle-buttons-enter-active,
+.toggle-buttons-leave-active {
+  transition: transform 400ms ease;
+}
+
+.toggle-buttons-enter-from,
+.toggle-buttons-leave-to {
+  transform: translateX(7rem);
+}
 </style>
