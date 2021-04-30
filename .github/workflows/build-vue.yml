@@ -16,5 +16,5 @@ jobs:
       with:
         username: 'logotip4ik'
         reponame: 'my-journal'
-        cname: 'https://journal.bogdankostyuk.xyz/'
+        cname: 'journal.bogdankostyuk.xyz'
         token: ${{ secrets.GITHUB_TOKEN }}
