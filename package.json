@@ -24,7 +24,7 @@
     "uuid": "^8.3.0",
     "vue": "^3.0.0-beta.1",
     "vue3-simple-file-input": "^1.0.3",
-    "vuetify": "^2.2.11"
+    "vuetify": "^2.6.10"
   },
   "devDependencies": {
     "@types/dompurify": "^2.2.1",
